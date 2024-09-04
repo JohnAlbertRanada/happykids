@@ -6,14 +6,21 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "dev_start": "nodemon server.js"
   },
   "dependencies": {
+    "chart.js": "^4.4.4",
+    "express": "^4.19.2",
+    "firebase": "^10.13.1",
+    "next": "14.2.7",
     "react": "^18",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18",
-    "next": "14.2.7"
+    "react-icons": "^5.3.0"
   },
   "devDependencies": {
+    "nodemon": "^3.1.4",
     "postcss": "^8",
     "tailwindcss": "^3.4.1"
   }
