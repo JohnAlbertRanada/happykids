@@ -43,29 +43,32 @@ export default function SentencePronunciation() {
     router.push(`/activity/sentence_pronunciation/${id}`)
   }
 
-  return <div className="w-full h-dvh bg-cover bg-center bg-[url('/images/background_image.jpg')] flex flex-col relative">
-    <nav className="flex flex-row justify-between items-center w-full sm:pr-10 pr-5">
-      <div className="sm:size-32 size-24 relative">
+  return <div className="w-full h-dvh bg-cover bg-center bg-[url('/images/background_image_v2.png')] flex flex-col relative bg-black">
+  <nav className="flex flex-row justify-between items-center w-full sm:px-10 px-5 mt-2">
+    <div className="sm:size-28 size-20 relative">
+      <Image
+        src="/images/logo-v2.png"
+        alt="Logo"
+        fill
+        className="object-contain"
+      />
+    </div>
+    <div className="flex flex-row items-center sm:space-x-3 space-x-1">
+      <p className="sm:text-3xl text-base text-white font-bold">0</p>
+      <div className="sm:size-14 size-10 relative">
         <Image
-          src="/images/logo.png"
-          alt="Logo"
+          src="/images/star.png"
+          alt="Star"
           fill
           className="object-contain"
         />
       </div>
-      <div className="flex flex-row items-center sm:space-x-3 space-x-1">
-        <p className="sm:text-3xl text-base text-white font-bold">0</p>
-        <div className="sm:size-14 size-10 relative">
-          <Image
-            src="/images/star.png"
-            alt="Star"
-            fill
-            className="object-contain"
-          />
-        </div>
-      </div>
-    </nav>
-    <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4 sm:max-h-[calc(100%_-_210px)] max-h-[calc(100%_-_180px)] sm:w-[calc(100%_-_80px)] w-[calc(100%_-_40px)] sm:mx-10 mx-5 overflow-y-scroll">
+    </div>
+  </nav>
+  <p className="text-white text-3xl font-semibold ml-10">
+        Activity - Sentence Pronunciation
+      </p>
+      <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4 sm:max-h-[calc(100%_-_230px)] max-h-[calc(100%_-_2000px)] sm:w-[calc(100%_-_80px)] w-[calc(100%_-_40px)] sm:mx-10 mx-5 mt-5 overflow-y-scroll">
       {sentences?.map((sentence, index) => {
         return <button key={index} onClick={() => goToSentence(sentence.id)} className="w-full bg-[#766A6A] rounded flex justify-center items-center h-16">
           <p className="text-white text-lg">{sentence.word}</p>

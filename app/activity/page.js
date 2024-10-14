@@ -7,12 +7,17 @@ import { PiSpeakerSimpleHighFill, PiUser } from "react-icons/pi";
 export default function Activity() {
   const router = useRouter();
 
+  const playAudio = (text) => {
+    const utterance = new SpeechSynthesisUtterance(text);
+    speechSynthesis.speak(utterance);
+  };
+
   return (
-    <div className="w-full h-dvh bg-cover bg-center bg-[url('/images/background_image.jpg')] flex flex-col relative">
-      <nav className="flex flex-row justify-between items-center w-full sm:pr-10 pr-5">
-        <div className="sm:size-32 size-24 relative">
+    <div className="w-full h-dvh bg-cover bg-center bg-[url('/images/background_image_v2.png')] flex flex-col relative bg-black">
+      <nav className="flex flex-row justify-between items-center w-full sm:px-10 px-5 mt-2">
+        <div className="sm:size-28 size-20 relative">
           <Image
-            src="/images/logo.png"
+            src="/images/logo-v2.png"
             alt="Logo"
             fill
             className="object-contain"
@@ -30,6 +35,7 @@ export default function Activity() {
           </div>
         </div>
       </nav>
+      <p className="font-semibold text-3xl ml-10 my-5">Activity</p>
       <div className="flex flex-row flex-wrap justify-center sm:max-h-[calc(100%_-_210px)] max-h-[calc(100%_-_180px)] sm:w-[calc(100%_-_80px)] w-[calc(100%_-_40px)] sm:mx-10 mx-5 sm:space-x-3 space-x-0 overflow-y-scroll">
         <div className="flex flex-col p-5 my-3 text-xs outline-none lg:w-[calc(33%_-_24px)] md:w-[calc(50%_-_24px)] w-[calc(100%_-_24px)] border-none rounded bg-[#d9d9d9]">
           <p className="text-gray-600 text-xl font-bold tracking-wider text-start">
@@ -37,7 +43,7 @@ export default function Activity() {
           </p>
           <p className="text-gray-800 font-bold sm:text-3xl text-2xl mt-5">between</p>
           <p className="text-gray-600 font-semibold text-sm mb-5">/bəˈtwēn/</p>
-          <button className="p-2 rounded-full bg-[#766A6A] w-fit h-fit mb-5">
+          <button className="p-2 rounded-full bg-[#766A6A] w-fit h-fit mb-5" onClick={() => playAudio("between")}>
             <PiSpeakerSimpleHighFill size="20" />
           </button>
           <button onClick={() => router.push("/activity/word_pronunciation")} className="bg-[#766A6A] text-white h-10 px-5 mt-auto rounded">
@@ -54,7 +60,7 @@ export default function Activity() {
           <p className="text-gray-600 font-semibold text-sm mb-5">
             /waɪ ɑr ju ˈlɜrnɪŋ ˈɪŋɡlɪʃ/
           </p>
-          <button className="p-2 rounded-full bg-[#766A6A] w-fit h-fit mb-5">
+          <button className="p-2 rounded-full bg-[#766A6A] w-fit h-fit mb-5" onClick={() => playAudio("Why are you learning English?")}>
             <PiSpeakerSimpleHighFill size="20" />
           </button>
           <button onClick={() => router.push("/activity/sentence_pronunciation")} className="bg-[#766A6A] text-white h-10 px-5 mt-auto rounded">
@@ -68,7 +74,7 @@ export default function Activity() {
           <div className="flex flex-row my-5">
             <div className="relative flex justify-center items-center size-10 rounded-full bg-white border border-black">
               <PiUser size={25} color="black" />
-              <button className="absolute -bottom-2 -right-2 z-10 p-2 rounded-full bg-[#766A6A] w-fit h-fit">
+              <button className="absolute -bottom-2 -right-2 z-10 p-2 rounded-full bg-[#766A6A] w-fit h-fit" onClick={() => playAudio("Are you a student?")}>
                 <PiSpeakerSimpleHighFill size={10} />
               </button>
             </div>
@@ -82,12 +88,12 @@ export default function Activity() {
             </div>
             <div className="relative flex justify-center items-center size-10 rounded-full bg-white border border-black">
               <PiUser size={25} color="black" />
-              <button className="absolute -bottom-2 -right-2 z-10 p-2 rounded-full bg-[#766A6A] w-fit h-fit">
+              <button className="absolute -bottom-2 -right-2 z-10 p-2 rounded-full bg-[#766A6A] w-fit h-fit" onClick={() => playAudio("Yes, I am a student.")}>
                 <PiSpeakerSimpleHighFill size={10} />
               </button>
             </div>
           </div>
-          <button className="bg-[#766A6A] text-white h-10 px-5 mt-auto rounded">
+          <button className="bg-[#766A6A] text-white h-10 px-5 mt-auto rounded" onClick={() => router.push("/activity/scripted_speech")}>
             Start Activity
           </button>
         </div>

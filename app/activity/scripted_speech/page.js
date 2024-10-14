@@ -7,65 +7,14 @@ import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 
-export default function WordPronunciation() {
+export default function SpeechScripted() {
   const router = useRouter();
 
-  // const words = [
-  //   {
-  //     id: "1",
-  //     word: "build"
-  //   },
-  //   {
-  //     id: "2",
-  //     word: "drill"
-  //   },
-  //   {
-  //     id: "3",
-  //     word: "glasses"
-  //   },
-  //   {
-  //     id: "4",
-  //     word: "hammer"
-  //   },
-  //   {
-  //     id: "5",
-  //     word: "level"
-  //   },
-  //   {
-  //     id: "6",
-  //     word: "measuring"
-  //   },
-  //   {
-  //     id: "7",
-  //     word: "nail"
-  //   },
-  //   {
-  //     id: "8",
-  //     word: "power"
-  //   },
-  //   {
-  //     id: "9",
-  //     word: "repair"
-  //   },
-  //   {
-  //     id: "10",
-  //     word: "safety"
-  //   },
-  //   {
-  //     id: "11",
-  //     word: "screw"
-  //   },
-  //   {
-  //     id: "12",
-  //     word: "tools"
-  //   }
-  // ]
-
-  const [words, setWords] = useState([]);
+  const [sentences, setSentences] = useState([]);
 
   // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, (word) => {
-  //     setWords(word);
+  //   const unsubscribe = onAuthStateChanged(auth, (sentence) => {
+  //     setSentences(sentence);
   //   });
 
   //   return () => unsubscribe();
@@ -76,22 +25,21 @@ export default function WordPronunciation() {
   }, []);
 
   const fetchData = async () => {
-    const wordRef = collection(db, "word_pronunciation");
+    const wordRef = collection(db, "scripted_speech");
     const q = query(wordRef, orderBy("level", "asc"));
 
     const querySnapshot = await getDocs(q);
-    console.log(querySnapshot);
     const result = querySnapshot.docs.map((doc) => {
       return {
         id: doc.id,
         ...doc.data(),
       };
     });
-    setWords(result);
+    setSentences(result);
   };
 
-  const goToWord = (id) => {
-    router.push(`/activity/word_pronunciation/${id}`);
+  const goToSentence = (id) => {
+    router.push(`/activity/scripted_speech/${id}`);
   };
 
   return (
@@ -118,17 +66,19 @@ export default function WordPronunciation() {
         </div>
       </nav>
       <p className="text-white text-3xl font-semibold ml-10">
-        Activity - Word Pronunciation
+        Activity - Scripted Speech
       </p>
       <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4 sm:max-h-[calc(100%_-_230px)] max-h-[calc(100%_-_2000px)] sm:w-[calc(100%_-_80px)] w-[calc(100%_-_40px)] sm:mx-10 mx-5 mt-5 overflow-y-scroll">
-        {words?.map((word, index) => {
+        {sentences?.map((sentence, index) => {
           return (
             <button
               key={index}
-              onClick={() => goToWord(word.id)}
+              onClick={() => goToSentence(sentence.id)}
               className="w-full bg-[#766A6A] rounded flex justify-center items-center h-16"
             >
-              <p className="text-white text-lg">{word.word}</p>
+              <p className="text-white text-lg">
+                Conversation {sentence.level}
+              </p>
             </button>
           );
         })}
