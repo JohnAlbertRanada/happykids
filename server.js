@@ -49,7 +49,7 @@ app.prepare().then(() => {
   })
 
   // Handling all other routes
-  server.get('*', (req, res) => {
+  server.all('*', (req, res) => {
     return handle(req, res);
   });
 
