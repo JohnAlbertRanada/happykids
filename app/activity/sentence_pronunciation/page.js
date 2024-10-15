@@ -6,6 +6,7 @@ import { auth, db } from '@/app/firebase.js';
 import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { useRouter } from "next/navigation";
+import { PiCaretCircleLeftBold } from "react-icons/pi";
 
 export default function SentencePronunciation() {
 
