@@ -45,7 +45,11 @@ export default function AdminConversation() {
   const selectedItem = words.find((word) => word.id === selectedItemId);
 
   useEffect(() => {
-    fetchData();
+    if(localStorage.getItem("admin_uid")) {
+      fetchData();
+    } else {
+      router.replace('/admn/login')
+    }
   }, []);
 
   useEffect(() => {

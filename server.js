@@ -4,6 +4,9 @@ const multer = require('multer');
 const {spawn} = require("child_process");
 const path = require("path");
 const cors = require("cors")
+const admin = require("firebase-admin")
+const serviceAccount = require("./serviceAccountKey.json")
+
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -11,11 +14,27 @@ const handle = app.getRequestHandler();
 
 const upload = multer();
 
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount), // Or provide path to your service account key file
+  });
+}
 
 app.prepare().then(() => {
   const server = express();
 
   server.use(express.json());
+
+  server.delete('/user/:id', async (req, res) => {
+    const {id} = req.params;
+    try {
+      await admin.auth().deleteUser(id);
+    } catch (error) {
+      console.log(error)
+    }
+
+    return res.json({message: "success"})
+  })
 
   // Example custom route
   server.get('/', (req, res) => {

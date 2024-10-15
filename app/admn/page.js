@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
 import Image from "next/image";
 import {
   PiEyeBold,
@@ -12,6 +11,8 @@ import {
 import { db } from "../firebase";
 import {
   collection,
+  deleteDoc,
+  doc,
   endBefore,
   getDocs,
   limit,
@@ -39,7 +40,11 @@ export default function AdminUsers() {
   const selectedItem = users.find((user) => user.id === selectedItemId);
 
   useEffect(() => {
-    fetchData();
+    if(localStorage.getItem("admin_uid")) {
+      fetchData();
+    } else {
+      router.replace('/admn/login')
+    }
   }, []);
 
   const fetchData = async () => {
@@ -134,19 +139,62 @@ export default function AdminUsers() {
     setModalOpen("");
   }
 
-  function handleDelete() {}
+  async function handleDelete() {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/user/${selectedItemId}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (response.status === 200) {
+        const docRef = doc(db, "users", selectedItemId);
+        await deleteDoc(docRef);
+        const userRef = collection(db, "users");
+        const userQuery = query(userRef, orderBy("firstName"), limit(pageLimit));
+        const querySnapshot = await getDocs(userQuery);
+        console.log(querySnapshot);
+        setStart(0);
+        setFinish(querySnapshot.size);
+        const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+        const result = querySnapshot.docs.map((doc) => {
+          return {
+            id: doc.id,
+            ...doc.data(),
+          };
+        });
+
+        console.log(result);
+        setUsers(result);
+        if (querySnapshot.size && querySnapshot.size > 0) {
+          setLastUser(lastVisible);
+        }
+        setModalOpen("");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   // Define the preferred key order
-  const preferredOrder = ["id", "currentImage", "firstName", "lastName", "email", "stars", "createdAt"];
+  const preferredOrder = [
+    "id",
+    "currentImage",
+    "firstName",
+    "lastName",
+    "email",
+    "stars",
+    "createdAt",
+  ];
   const keyReplacement = {
     id: "ID",
     currentImage: "Current Image",
     firstName: "First Name",
-    lastName: "Last Name", 
+    lastName: "Last Name",
     email: "Email",
     stars: "Stars",
-    createdAt: "Created At"
-  }
+    createdAt: "Created At",
+  };
 
   return (
     <div className="w-full h-dvh bg-cover bg-center bg-opacity-80 bg-[url('/images/background_image_v2.png')] flex flex-col bg-black relative">
@@ -234,9 +282,9 @@ export default function AdminUsers() {
                     >
                       <PiEyeBold size={20} />
                     </button>
-                    <button className="outline-none border-none bg-transparent">
+                    {/* <button className="outline-none border-none bg-transparent">
                       <PiPencilBold size={20} />
-                    </button>
+                    </button> */}
                     <button
                       className="outline-none border-none bg-transparent"
                       onClick={() => openModal("delete", user.id)}

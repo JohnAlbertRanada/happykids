@@ -39,7 +39,11 @@ export default function AdminScriptedSpeech() {
   const selectedItem = words.find((word) => word.id === selectedItemId);
 
   useEffect(() => {
-    fetchData();
+    if(localStorage.getItem("admin_uid")) {
+      fetchData();
+    } else {
+      router.replace('/admn/login')
+    }
   }, []);
 
   const fetchData = async () => {

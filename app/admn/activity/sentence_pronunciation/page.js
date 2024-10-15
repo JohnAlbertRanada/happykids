@@ -11,6 +11,10 @@ import {
 } from "react-icons/pi";
 import { db } from "@/app/firebase";
 import {
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
   collection,
   endBefore,
   getDocs,
@@ -46,7 +50,11 @@ export default function AdminSentencePronunciation() {
   const selectedItem = words.find((word) => word.id === selectedItemId);
 
   useEffect(() => {
-    fetchData();
+    if(localStorage.getItem("admin_uid")) {
+      fetchData();
+    } else {
+      router.replace('/admn/login')
+    }
   }, []);
 
   useEffect(() => {
@@ -163,11 +171,107 @@ export default function AdminSentencePronunciation() {
     setModalOpen("");
   }
 
-  function handleDelete() {}
+  async function handleDelete() {
+    try {
+      const docRef = doc(db, "sentence_pronunciation", selectedItemId);
+      await deleteDoc(docRef);
+      const userRef = collection(db, "sentence_pronunciation");
+      const userQuery = query(userRef, orderBy("level"), limit(pageLimit));
+      const querySnapshot = await getDocs(userQuery);
+      console.log(querySnapshot);
+      setStart(0);
+      setFinish(querySnapshot.size);
+      const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+      const result = querySnapshot.docs.map((doc) => {
+        return {
+          id: doc.id,
+          ...doc.data(),
+        };
+      });
 
-  function handleAdd() {}
+      console.log(result);
+      setWords(result);
+      if (querySnapshot.size && querySnapshot.size > 0) {
+        setLastUser(lastVisible);
+      }
+      setModalOpen("");
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-  function handleEdit() {}
+  async function handleAdd() {
+    console.log(words.length, addedWord.level);
+    if (words.length < addedWord.level) {
+      console.log("CALLED");
+      try {
+        const docRef = await addDoc(collection(db, "sentence_pronunciation"), {
+          word: addedWord.word,
+          level: Number(addedWord.level),
+          pronunciation: addedWord.pronunciation,
+          star: Number(addedWord.star),
+        });
+        console.log(docRef);
+
+        const userRef = collection(db, "sentence_pronunciation");
+        const userQuery = query(userRef, orderBy("level"), limit(pageLimit));
+        const querySnapshot = await getDocs(userQuery);
+        console.log(querySnapshot);
+        setStart(0);
+        setFinish(querySnapshot.size);
+        const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+        const result = querySnapshot.docs.map((doc) => {
+          return {
+            id: doc.id,
+            ...doc.data(),
+          };
+        });
+
+        console.log(result);
+        setWords(result);
+        if (querySnapshot.size && querySnapshot.size > 0) {
+          setLastUser(lastVisible);
+        }
+        setModalOpen("");
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
+
+  async function handleEdit() {
+    try {
+      const docRef = doc(db, "sentence_pronunciation", selectedItemId);
+      await updateDoc(docRef, {
+        word: addedWord.word ?? "",
+        level: Number(addedWord.level),
+        pronunciation: addedWord.pronunciation ?? "",
+        star: Number(addedWord.star),
+      });
+      const userRef = collection(db, "sentence_pronunciation");
+      const userQuery = query(userRef, orderBy("level"), limit(pageLimit));
+      const querySnapshot = await getDocs(userQuery);
+      console.log(querySnapshot);
+      setStart(0);
+      setFinish(querySnapshot.size);
+      const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+      const result = querySnapshot.docs.map((doc) => {
+        return {
+          id: doc.id,
+          ...doc.data(),
+        };
+      });
+
+      console.log(result);
+      setWords(result);
+      if (querySnapshot.size && querySnapshot.size > 0) {
+        setLastUser(lastVisible);
+      }
+      setModalOpen("");
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const preferredOrder = ["id", "word", "level", "pronunciation", "star"];
   const keyReplacement = {

@@ -11,7 +11,11 @@ import {
 } from "react-icons/pi";
 import { db } from "@/app/firebase";
 import {
+  addDoc,
   collection,
+  deleteDoc,
+  updateDoc,
+  doc,
   endBefore,
   getDocs,
   limit,
@@ -48,7 +52,11 @@ export default function AdminLibrary() {
   const selectedItem = words.find((word) => word.id === selectedItemId);
 
   useEffect(() => {
-    fetchData();
+    if(localStorage.getItem("admin_uid")) {
+      fetchData();
+    } else {
+      router.replace('/admn/login')
+    }
   }, []);
 
   useEffect(() => {
@@ -169,11 +177,111 @@ export default function AdminLibrary() {
     setModalOpen("");
   }
 
-  function handleDelete() {}
+  async function handleDelete() {
+    try {
+      const docRef = doc(db, "vocabulary", selectedItemId);
+      await deleteDoc(docRef);
+      const userRef = collection(db, "vocabulary");
+      const userQuery = query(userRef, orderBy("level"), limit(pageLimit));
+      const querySnapshot = await getDocs(userQuery);
+      console.log(querySnapshot);
+      setStart(0);
+      setFinish(querySnapshot.size);
+      const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+      const result = querySnapshot.docs.map((doc) => {
+        return {
+          id: doc.id,
+          ...doc.data(),
+        };
+      });
 
-  function handleAdd() {}
+      console.log(result);
+      setWords(result);
+      if (querySnapshot.size && querySnapshot.size > 0) {
+        setLastUser(lastVisible);
+      }
+      setModalOpen("");
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-  function handleEdit() {}
+  async function handleAdd() {
+    console.log(words.length, addedWord.level);
+    if (words.length < addedWord.level) {
+      console.log("CALLED");
+      try {
+        const docRef = await addDoc(collection(db, "vocabulary"), {
+          word: addedWord.word,
+          level: Number(addedWord.level),
+          pronunciation: addedWord.pronunciation,
+          description: addedWord.description,
+          tagalog: addedWord.tagalog,
+          star: Number(addedWord.star),
+        });
+        console.log(docRef);
+
+        const userRef = collection(db, "vocabulary");
+        const userQuery = query(userRef, orderBy("level"), limit(pageLimit));
+        const querySnapshot = await getDocs(userQuery);
+        console.log(querySnapshot);
+        setStart(0);
+        setFinish(querySnapshot.size);
+        const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+        const result = querySnapshot.docs.map((doc) => {
+          return {
+            id: doc.id,
+            ...doc.data(),
+          };
+        });
+
+        console.log(result);
+        setWords(result);
+        if (querySnapshot.size && querySnapshot.size > 0) {
+          setLastUser(lastVisible);
+        }
+        setModalOpen("");
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
+
+  async function handleEdit() {
+    try {
+      const docRef = doc(db, "vocabulary", selectedItemId);
+      await updateDoc(docRef, {
+        word: addedWord.word ?? "",
+        level: Number(addedWord.level),
+        pronunciation: addedWord.pronunciation ?? "",
+        description: addedWord.description ?? "",
+        tagalog: addedWord.tagalog ?? "",
+        star: Number(addedWord.star),
+      });
+      const userRef = collection(db, "vocabulary");
+      const userQuery = query(userRef, orderBy("level"), limit(pageLimit));
+      const querySnapshot = await getDocs(userQuery);
+      console.log(querySnapshot);
+      setStart(0);
+      setFinish(querySnapshot.size);
+      const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+      const result = querySnapshot.docs.map((doc) => {
+        return {
+          id: doc.id,
+          ...doc.data(),
+        };
+      });
+
+      console.log(result);
+      setWords(result);
+      if (querySnapshot.size && querySnapshot.size > 0) {
+        setLastUser(lastVisible);
+      }
+      setModalOpen("");
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const preferredOrder = [
     "id",
