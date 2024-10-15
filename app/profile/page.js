@@ -57,7 +57,8 @@ export default function Profile() {
     },
   ];
   const [user, setUser] = useState({});
-  const [showModal, setShowModal] = useState(false)
+  const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     init();
@@ -76,11 +77,12 @@ export default function Profile() {
   }, []);
 
   async function init() {
+    setLoading(true)
     const userId = localStorage.getItem("user_id");
 
     if (!localStorage.getItem("user_id")) {
       router.replace("/login");
-    }
+    } else {
 
     console.log(userId);
     const docRef = doc(db, "users", userId);
@@ -89,6 +91,8 @@ export default function Profile() {
     const docSnap = await getDoc(docRef);
     console.log(docSnap.data());
     setUser(docSnap.data());
+    setLoading(false)
+    }
   }
 
   const RadarData = {
@@ -154,45 +158,50 @@ export default function Profile() {
 
   return (
     <div className="w-full h-dvh bg-cover bg-center bg-[url('/images/background_image_v2.png')] flex flex-col relative bg-black">
-      {showModal && <div className="absolute top-0 left-0 w-full h-full z-50 flex justify-center items-center bg-black bg-opacity-50">
-        <div className="bg-white p-5 rounded drop-shadow w-[calc(100%_-_120px)] sm:max-h-[calc(100%_-_210px)] max-h-[calc(100%_-_180px)] lg:w-[calc(50%_-_56px)]">
-          <div className="flex flex-row justify-between items-center">
-            <p className="text-3xl font-bold text-[#766A6A]">Characters</p>
-            <button className="m-0 p-0 outline-none border-none" onClick={() => setShowModal(false)}>
-              <PiXBold size={20} color="#766A6A" />
-            </button>
-          </div>
-          <div className="flex flex-row flex-wrap gap-5 w-full justify-center items-center mt-5">
-            {characters.map((character) => {
-              return (
-                <div className="size-[calc(w-[100%_*_.20])] flex flex-col">
-                  <div className="sm:size-24 size-16 relative">
-                    <Image
-                      src={character.image}
-                      alt="Character"
-                      fill
-                      className="object-contain rounded-full"
-                    />
-                  </div>
-                  <div className="flex flex-row justify-center items-center w-full space-x-2">
-                    <p className="text-black font-bold text-lg">
-                      {character.stars}
-                    </p>
-                    <div className="size-8 relative">
+      {showModal && (
+        <div className="absolute top-0 left-0 w-full h-full z-50 flex justify-center items-center bg-black bg-opacity-50">
+          <div className="bg-white p-5 rounded drop-shadow w-[calc(100%_-_120px)] sm:max-h-[calc(100%_-_210px)] max-h-[calc(100%_-_180px)] lg:w-[calc(50%_-_56px)]">
+            <div className="flex flex-row justify-between items-center">
+              <p className="text-3xl font-bold text-[#766A6A]">Characters</p>
+              <button
+                className="m-0 p-0 outline-none border-none"
+                onClick={() => setShowModal(false)}
+              >
+                <PiXBold size={20} color="#766A6A" />
+              </button>
+            </div>
+            <div className="flex flex-row flex-wrap gap-5 w-full justify-center items-center mt-5">
+              {characters.map((character) => {
+                return (
+                  <div className="size-[calc(w-[100%_*_.20])] flex flex-col">
+                    <div className="sm:size-24 size-16 relative">
                       <Image
-                        src="/images/star.png"
-                        alt="Star"
+                        src={character.image}
+                        alt="Character"
                         fill
-                        className="object-contain"
+                        className="object-contain rounded-full"
                       />
                     </div>
+                    <div className="flex flex-row justify-center items-center w-full space-x-2">
+                      <p className="text-black font-bold text-lg">
+                        {character.stars}
+                      </p>
+                      <div className="size-8 relative">
+                        <Image
+                          src="/images/star.png"
+                          alt="Star"
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
-      </div>}
+      )}
       <nav className="flex flex-row justify-between items-center w-full sm:px-10 px-5 mt-2">
         <div className="sm:size-28 size-20 relative">
           <Image
@@ -216,59 +225,68 @@ export default function Profile() {
           </div>
         </div>
       </nav>
-      <div className="flex flex-row flex-wrap w-[calc(100%_-_80px)] sm:max-h-[calc(100%_-_210px)] max-h-[calc(100%_-_180px)] mx-10 justify-evenly items-center overflow-y-scroll">
-        <div className="flex flex-col lg:w-[calc(50%_-_16px)] w-[calc(100%_-_16px)] lg:my-0 my-3 mx-2 p-5 bg-[#d9d9d9] lg:h-full max-h-fit">
-          <div className="flex flex-row items-center space-x-5">
-            <div className="size-20 relative group">
-              <Image
-                src={user?.currentImage}
-                alt="Profile Pic"
-                fill
-                className="object-cover rounded-full"
-              />
-              <button className="justify-center items-center group-hover:flex hidden absolute top-0 left-0 z-10 w-full h-full bg-black bg-opacity-50 rounded-full outline-none border-none" onClick={() => setShowModal(true)}>
-                <PiPencilBold size={20} />
-              </button>
-            </div>
-            <div className="flex flex-col items-start">
-              <div className="p-1 my-1 text-sm outline-none border-none w-fit bg-[#766A6A]">
-                <p className="text-white">
-                  {user?.firstName} {user?.lastName}
-                </p>
+      {loading ? (
+        <div className="flex flex-1 justify-center items-center">
+          <p className="animate-bounce text-3xl text-white font-semibold">Loading ...</p>
+        </div>
+      ) : (
+        <div className="flex flex-row flex-wrap w-[calc(100%_-_80px)] sm:max-h-[calc(100%_-_210px)] max-h-[calc(100%_-_180px)] mx-10 justify-evenly items-center overflow-y-scroll">
+          <div className="flex flex-col lg:w-[calc(50%_-_16px)] w-[calc(100%_-_16px)] lg:my-0 my-3 mx-2 p-5 bg-[#d9d9d9] lg:h-full max-h-fit">
+            <div className="flex flex-row items-center space-x-5">
+              <div className="size-20 relative group">
+                <Image
+                  src={user?.currentImage}
+                  alt="Profile Pic"
+                  fill
+                  className="object-cover rounded-full"
+                />
+                <button
+                  className="justify-center items-center group-hover:flex hidden absolute top-0 left-0 z-10 w-full h-full bg-black bg-opacity-50 rounded-full outline-none border-none"
+                  onClick={() => setShowModal(true)}
+                >
+                  <PiPencilBold size={20} />
+                </button>
               </div>
-              {/* <button className="p-1 my-1 text-sm outline-none border-none w-fit bg-[#766A6A]">
+              <div className="flex flex-col items-start">
+                <div className="p-1 my-1 text-sm outline-none border-none w-fit bg-[#766A6A]">
+                  <p className="text-white">
+                    {user?.firstName} {user?.lastName}
+                  </p>
+                </div>
+                {/* <button className="p-1 my-1 text-sm outline-none border-none w-fit bg-[#766A6A]">
                 <p className="text-white">Edit your Profile</p>
               </button> */}
+                <button
+                  onClick={() => logout()}
+                  className="p-1 my-1 text-xs outline-none border-none w-fit bg-[#766A6A]"
+                >
+                  <p className="text-white">Logout</p>
+                </button>
+              </div>
+            </div>
+            <div className="flex flex-col bg-[#766A6A] p-3 my-2">
+              {/* <button className="p-1 my-1 outline-none border-none bg-[#d9d9d9]">
+              <p className="text-gray-600">Learning and Sound Settings</p>
+            </button> */}
               <button
-                onClick={() => logout()}
-                className="p-1 my-1 text-xs outline-none border-none w-fit bg-[#766A6A]"
+                className="p-1 my-1 outline-none border-none bg-[#d9d9d9]"
+                onClick={() => router.push("/change_password")}
               >
-                <p className="text-white">Logout</p>
+                <p className="text-gray-600">Change Password</p>
+              </button>
+              <button className="p-1 my-1 outline-none border-none bg-[#d9d9d9]">
+                <p className="text-gray-600">Terms of Use</p>
+              </button>
+              <button className="p-1 my-1 outline-none border-none bg-[#d9d9d9]">
+                <p className="text-gray-600">Policy</p>
               </button>
             </div>
           </div>
-          <div className="flex flex-col bg-[#766A6A] p-3 my-2">
-            {/* <button className="p-1 my-1 outline-none border-none bg-[#d9d9d9]">
-              <p className="text-gray-600">Learning and Sound Settings</p>
-            </button> */}
-            <button
-              className="p-1 my-1 outline-none border-none bg-[#d9d9d9]"
-              onClick={() => router.push("/change_password")}
-            >
-              <p className="text-gray-600">Change Password</p>
-            </button>
-            <button className="p-1 my-1 outline-none border-none bg-[#d9d9d9]">
-              <p className="text-gray-600">Terms of Use</p>
-            </button>
-            <button className="p-1 my-1 outline-none border-none bg-[#d9d9d9]">
-              <p className="text-gray-600">Policy</p>
-            </button>
-          </div>
-        </div>
-        {/* <div className="flex justify-center items-center lg:w-[calc(50%_-_16px)] w-[calc(100%_-_16px)] md:my-0 my-2 mx-2 p-5 bg-[#d9d9d9] lg:h-full max-h-fit">
+          {/* <div className="flex justify-center items-center lg:w-[calc(50%_-_16px)] w-[calc(100%_-_16px)] md:my-0 my-2 mx-2 p-5 bg-[#d9d9d9] lg:h-full max-h-fit">
           <Radar data={RadarData} options={RadarOptions} />
         </div> */}
-      </div>
+        </div>
+      )}
       <div className="flex flex-row justify-evenly items-start w-full h-20 fixed bottom-0 left-0">
         <button className="size-14 relative" onClick={() => router.push("/")}>
           <Image
