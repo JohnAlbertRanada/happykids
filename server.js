@@ -26,7 +26,7 @@ app.prepare().then(() => {
     return app.render(req, res, '/', req.query);
   });
 
-  server.post('/rate/word_pronunciation', upload.single('audio'), (req, res) => {
+  server.all('/rate/word_pronunciation', upload.single('audio'), (req, res) => {
     const referenceText = req.body.referenceText;
     const audioBuffer = req.file.buffer;
   
