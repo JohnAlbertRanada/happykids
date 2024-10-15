@@ -1,12 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 
 import { auth, db } from "@/app/firebase.js";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import {
+  PiCaretCircleLeftBold,
   PiEar,
   PiMicrophone,
   PiSpeakerHighFill,
@@ -15,6 +16,7 @@ import {
 } from "react-icons/pi";
 
 export default function WordPronunciationItem() {
+  const router  = useRouter()
   const params = useParams();
   console.log(params);
   const { id } = params;
@@ -113,7 +115,7 @@ export default function WordPronunciationItem() {
     console.log(audio);
 
     const formData = new FormData();
-    formData.append("referenceText", referenceText.replace(/[.,?!]/g, ''));
+    formData.append("referenceText", referenceText.replace(/[.,?!]/g, ""));
     formData.append("audio", dataURLtoBlob(audio));
 
     try {
@@ -167,9 +169,16 @@ export default function WordPronunciationItem() {
       <div className="flex justify-center items-center sm:h-[calc(100%_-_180px)] h-[calc(100%_-_150px)] sm:w-[calc(100%_-_80px)] w-[calc(100%_-_40px)] sm:mx-10 mx-5 mt-5 overflow-y-scroll">
         {loading ? (
           <div className="flex flex-col h-full w-[calc(100%_-_20px)] rounded p-5 bg-[#d9d9d9]">
-            <p className="sm:text-2xl text-lg text-black font-semibold">
-              Word Pronunciation
-            </p>
+            <div className="flex flex-row w-full items-center">
+              <PiCaretCircleLeftBold
+                color="black"
+                size={35}
+                onClick={() => router.back()}
+              />
+              <p className="sm:text-2xl text-lg text-black font-semibold ml-2">
+                Activity - Word Pronunciation
+              </p>
+            </div>
             <div className="flex flex-1 justify-center items-center">
               <p className="animate-bounce text-3xl text-black">Loading ...</p>
             </div>
@@ -242,7 +251,8 @@ export default function WordPronunciationItem() {
                       stroke-width="2"
                       stroke-dasharray="100"
                       stroke-dashoffset={
-                        result.penalty > result.average_score || result.transcription === null
+                        result.penalty > result.average_score ||
+                        result.transcription === null
                           ? 0
                           : 100 -
                             Math.round(result.average_score - result.penalty)
@@ -253,7 +263,8 @@ export default function WordPronunciationItem() {
 
                   <div class="absolute top-1/2 start-1/2 transform -translate-y-1/2 -translate-x-1/2">
                     <span class="text-center text-2xl font-bold text-[#766A6A] dark:text-[#766A6A]">
-                      {result.penalty > result.average_score || result.transcription === null
+                      {result.penalty > result.average_score ||
+                      result.transcription === null
                         ? 0
                         : (result.average_score - result.penalty).toFixed(2)}
                       %

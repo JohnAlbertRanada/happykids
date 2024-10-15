@@ -1,12 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 
 import { auth, db } from "@/app/firebase.js";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import {
+  PiCaretCircleLeftBold,
   PiEar,
   PiMicrophone,
   PiSpeakerHighFill,
@@ -14,6 +15,7 @@ import {
 } from "react-icons/pi";
 
 export default function VocabularyItem() {
+  const router = useRouter();
   const params = useParams();
   console.log(params);
   const { id } = params;
@@ -23,7 +25,7 @@ export default function VocabularyItem() {
   const playAudio = (text) => {
     const utterance = new SpeechSynthesisUtterance(text);
     speechSynthesis.speak(utterance);
-    setAudioPlayed(true)
+    setAudioPlayed(true);
   };
 
   const [word, setWord] = useState(null);
@@ -69,12 +71,21 @@ export default function VocabularyItem() {
       <div className="flex justify-center items-center sm:h-[calc(100%_-_180px)] h-[calc(100%_-_150px)] sm:w-[calc(100%_-_80px)] w-[calc(100%_-_40px)] sm:mx-10 mx-5 pt-5 overflow-y-scroll">
         <div className="flex flex-col h-full w-[calc(100%_-_20px)] rounded p-5 bg-[#d9d9d9]">
           <div className="flex flex-row w-full items-center justify-between">
-            <p className="sm:text-2xl text-lg text-black font-semibold">
-              Library - Vocabulary
-            </p>
-            {audioPlayed && <button className="rounded bg-[#766A6A] text-white p-2">
-              DONE
-            </button>}
+            <div className="flex flex-row w-full items-center">
+              <PiCaretCircleLeftBold
+                color="black"
+                size={35}
+                onClick={() => router.back()}
+              />
+              <p className="sm:text-2xl text-lg text-black font-semibold ml-2">
+                Library - Vocabulary
+              </p>
+            </div>
+            {audioPlayed && (
+              <button className="rounded bg-[#766A6A] text-white p-2">
+                DONE
+              </button>
+            )}
           </div>
           <div className="flex flex-row w-full mt-5">
             <div className="flex flex-col flex-1 justify-center items-center">

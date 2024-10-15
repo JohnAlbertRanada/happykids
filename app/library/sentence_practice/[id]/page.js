@@ -17,6 +17,7 @@ import {
   where,
 } from "firebase/firestore";
 import {
+  PiCaretCircleLeftBold,
   PiEar,
   PiMicrophone,
   PiSpeakerHighFill,
@@ -71,11 +72,11 @@ export default function SentencePracticeItem() {
 
     setWord(docSnap.data());
 
-    if (user && userSnap.data().currentVocabulary) {
+    if (user && userSnap.data().currentSentencePractice) {
       const currentDocRef = doc(
         db,
         "sentence_practice",
-        userSnap.data().currentVocabulary.id
+        userSnap.data().currentSentencePractice.id
       );
       const currentDocSnap = await getDoc(currentDocRef);
       if (
@@ -173,9 +174,16 @@ export default function SentencePracticeItem() {
       <div className="flex justify-center items-center sm:h-[calc(100%_-_180px)] h-[calc(100%_-_150px)] sm:w-[calc(100%_-_80px)] w-[calc(100%_-_40px)] sm:mx-10 mx-5 pt-5 overflow-y-scroll">
         <div className="flex flex-col h-full w-[calc(100%_-_20px)] rounded p-5 bg-[#d9d9d9]">
           <div className="flex flex-row w-full items-center justify-between">
-            <p className="sm:text-2xl text-lg text-black font-semibold">
-              Library - Sentence Practice
-            </p>
+          <div className="flex flex-row w-full items-center">
+          <PiCaretCircleLeftBold
+                color="black"
+                size={35}
+                onClick={() => router.back()}
+              />
+              <p className="sm:text-2xl text-lg text-black font-semibold ml-2">
+                Library - Sentence Practice
+              </p>
+            </div>
             {audioPlayed && isCurrent && (
               <button className="rounded bg-[#766A6A] text-white p-2" onClick={() => handleStar(star, word.star, currentUser)}>
                 DONE
