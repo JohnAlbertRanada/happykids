@@ -118,7 +118,7 @@ export default function WordPronunciationItem() {
 
     try {
       const response = await fetch(
-        "http://localhost:3000/rate/word_pronunciation",
+        "https://happykids-five.vercel.app/rate/word_pronunciation",
         {
           method: "POST",
           body: formData,
