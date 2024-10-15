@@ -117,9 +117,12 @@ export default function WordPronunciation() {
           </div>
         </div>
       </nav>
-      <p className="text-white text-3xl font-semibold ml-10">
-        Activity - Word Pronunciation
-      </p>
+      <div className="flex flex-row w-full items-center ml-10">
+        <PiCaretCircleLeftBold color="white" size={40} onClick={() => router.back()} />
+        <p className="text-white text-3xl font-semibold ml-5">
+          Activity - Word Pronunciation
+        </p>
+      </div>
       <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4 sm:max-h-[calc(100%_-_230px)] max-h-[calc(100%_-_2000px)] sm:w-[calc(100%_-_80px)] w-[calc(100%_-_40px)] sm:mx-10 mx-5 mt-5 overflow-y-scroll">
         {words?.map((word, index) => {
           return (

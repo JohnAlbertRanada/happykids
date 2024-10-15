@@ -35,7 +35,7 @@ export default function Activity() {
           </div>
         </div>
       </nav>
-      <p className="font-semibold text-3xl ml-10 my-5">Activity</p>
+      <p className="font-semibold text-3xl ml-10 my-5 text-white">Activity</p>
       <div className="flex flex-row flex-wrap justify-center sm:max-h-[calc(100%_-_210px)] max-h-[calc(100%_-_180px)] sm:w-[calc(100%_-_80px)] w-[calc(100%_-_40px)] sm:mx-10 mx-5 sm:space-x-3 space-x-0 overflow-y-scroll">
         <div className="flex flex-col p-5 my-3 text-xs outline-none lg:w-[calc(33%_-_24px)] md:w-[calc(50%_-_24px)] w-[calc(100%_-_24px)] border-none rounded bg-[#d9d9d9]">
           <p className="text-gray-600 text-xl font-bold tracking-wider text-start">

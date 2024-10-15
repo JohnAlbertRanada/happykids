@@ -223,7 +223,7 @@ export default function ScriptedSpeechItem() {
 
     try {
       const response = await fetch(
-        "https://happykids-five.vercel.app/rate/word_pronunciation",
+        "http://localhost:3000/rate/word_pronunciation",
         {
           method: "POST",
           body: formData,

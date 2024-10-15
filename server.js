@@ -12,10 +12,6 @@ const handle = app.getRequestHandler();
 const upload = multer();
 
 
-app.use(cors({
-  origin: 'https://happykids-five.vercel.app', // Replace with your frontend URL
-}));
-
 app.prepare().then(() => {
   const server = express();
 
@@ -26,7 +22,7 @@ app.prepare().then(() => {
     return app.render(req, res, '/', req.query);
   });
 
-  server.all('/rate/word_pronunciation', upload.single('audio'), (req, res) => {
+  server.post('/rate/word_pronunciation', upload.single('audio'), (req, res) => {
     const referenceText = req.body.referenceText;
     const audioBuffer = req.file.buffer;
   
@@ -49,7 +45,7 @@ app.prepare().then(() => {
   })
 
   // Handling all other routes
-  server.all('*', (req, res) => {
+  server.get('*', (req, res) => {
     return handle(req, res);
   });
 
