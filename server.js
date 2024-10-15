@@ -3,6 +3,7 @@ const next = require('next');
 const multer = require('multer');
 const {spawn} = require("child_process");
 const path = require("path");
+const cors = require("cors")
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -10,6 +11,10 @@ const handle = app.getRequestHandler();
 
 const upload = multer();
 
+
+app.use(cors({
+  origin: 'https://happykids-five.vercel.app', // Replace with your frontend URL
+}));
 
 app.prepare().then(() => {
   const server = express();
