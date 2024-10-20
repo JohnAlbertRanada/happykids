@@ -274,11 +274,11 @@ export default function Profile() {
               >
                 <p className="text-gray-600">Change Password</p>
               </button>
-              <button className="p-1 my-1 outline-none border-none bg-[#d9d9d9]">
+              <button className="p-1 my-1 outline-none border-none bg-[#d9d9d9]" onClick={() => router.push("/terms_of_use")}>
                 <p className="text-gray-600">Terms of Use</p>
               </button>
-              <button className="p-1 my-1 outline-none border-none bg-[#d9d9d9]">
-                <p className="text-gray-600">Policy</p>
+              <button className="p-1 my-1 outline-none border-none bg-[#d9d9d9]" onClick={() => router.push("/privacy_policy")}>
+                <p className="text-gray-600">Privacy Policy</p>
               </button>
             </div>
           </div>

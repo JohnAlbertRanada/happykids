@@ -185,9 +185,16 @@ export default function WordPronunciationItem() {
           </div>
         ) : (
           <div className="flex flex-col h-full w-[calc(100%_-_20px)] rounded p-5 bg-[#d9d9d9]">
-            <p className="sm:text-2xl text-lg text-black font-semibold">
-              Word Pronunciation
-            </p>
+            <div className="flex flex-row w-full items-center">
+              <PiCaretCircleLeftBold
+                color="black"
+                size={35}
+                onClick={() => router.back()}
+              />
+              <p className="sm:text-2xl text-lg text-black font-semibold ml-2">
+                Activity - Word Pronunciation
+              </p>
+            </div>
             <div className="flex flex-row w-full mt-5">
               <div className="flex flex-col flex-1 justify-center items-center pl-10">
                 <p className="text-black md:text-5xl text-3xl font-bold  text-center mb-2">

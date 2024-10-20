@@ -304,7 +304,7 @@ export default function ScriptedSpeechItem() {
                 onClick={() => router.back()}
               />
               <p className="sm:text-2xl text-lg text-black font-semibold ml-2">
-                activity - Scripted Speech
+                Activity - Scripted Speech
               </p>
             </div>
             {/* {audioPlayed && <button className="rounded bg-[#766A6A] text-white p-2">

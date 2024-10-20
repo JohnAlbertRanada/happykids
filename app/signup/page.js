@@ -36,6 +36,10 @@ export default function Signup() {
           stars: 0,
           email: email,
           createdAt: new Date(),
+          currentVocabulary: {
+            level: 1,
+            start
+          }
           // Add more fields as needed
         });
         const usersCollectionRef = collection(db, "users");
