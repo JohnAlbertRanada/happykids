@@ -15,7 +15,7 @@ export default function Vocabulary() {
   const [words, setWords] = useState([]);
   const [user, setUser] = useState()
 
-  const currentWord = words.find((word) => word.id === user.currentVocabulary.id) ?? {id: "#", level: 1};
+  const currentWord = words.find((word) => word.level === user.currentVocabulary.level) ?? {id: "#", level: 1};
 
   // useEffect(() => {
   //   const unsubscribe = onAuthStateChanged(auth, (word) => {

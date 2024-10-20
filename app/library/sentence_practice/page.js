@@ -15,7 +15,7 @@ export default function SentencePractice() {
   const [words, setWords] = useState([]);
   const [user, setUser] = useState()
 
-  const currentWord = words.find((word) => word.id === user.currentSentencePractice.id);
+  const currentWord = words.find((word) => word.level === user.currentSentencePractice.level) ?? {id: "#", level: 1};
 
   // useEffect(() => {
   //   const unsubscribe = onAuthStateChanged(auth, (word) => {

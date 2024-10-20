@@ -15,7 +15,7 @@ export default function Conversation() {
   const [words, setWords] = useState([]);
   const [user, setUser] = useState()
 
-  const currentWord = words.find((word) => word.id === user.currentConversation.id);
+  const currentWord = words.find((word) => word.level === user.currentConversation.level) ?? {id: "#", level: 1};
 
   // useEffect(() => {
   //   const unsubscribe = onAuthStateChanged(auth, (word) => {

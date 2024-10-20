@@ -251,7 +251,7 @@ export default function AdminUsers() {
         </button>
       </div>
       <div className="flex flex-1 flex-col justify-start items-start mx-10 w-[calc(100%_-_80px)]">
-        <table className="w-full border rounded bg-[#766A6A]">
+        <table className="w-full border rounded bg-[#766A6A] text-white">
           <thead>
             <tr className="border">
               <th className="text-start p-2">ID</th>

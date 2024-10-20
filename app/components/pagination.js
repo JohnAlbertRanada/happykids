@@ -2,7 +2,7 @@
 
 
 export default function Pagination({start = 0, finish = 0, handleNext, handlePrev, pageLimit, word}) {
-  return <div className="flex flex-row w-full my-2 justify-end items-center gap-2">
+  return <div className="flex flex-row w-full my-2 justify-end items-center gap-2 text-white">
     <button className="p-2 border rounded" onClick={() => handlePrev(finish - pageLimit, finish)}>
       Prev
     </button>
