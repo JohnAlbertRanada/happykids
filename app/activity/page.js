@@ -1,11 +1,31 @@
 "use client";
 
+import { doc, getDoc } from "firebase/firestore";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { PiSpeakerSimpleHighFill, PiUser } from "react-icons/pi";
+import { db } from "../firebase";
 
 export default function Activity() {
   const router = useRouter();
+
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    init()
+  },[])
+
+  async function init() {
+    const userId = localStorage.getItem("user_id");
+
+    const userRef = doc(db, "users", userId);
+
+    // Fetch the document from Firestore
+    const userSnap = await getDoc(userRef);
+    console.log(userSnap.data());
+    setUser(userSnap.data());
+  }
 
   const playAudio = (text) => {
     const utterance = new SpeechSynthesisUtterance(text);
@@ -24,7 +44,7 @@ export default function Activity() {
           />
         </div>
         <div className="flex flex-row items-center sm:space-x-3 space-x-1">
-          <p className="sm:text-3xl text-base text-white font-bold">0</p>
+          <p className="sm:text-3xl text-base text-white font-bold">{user?.stars ?? 0}</p>
           <div className="sm:size-14 size-10 relative">
             <Image
               src="/images/star.png"

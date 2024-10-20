@@ -35,15 +35,17 @@ export default function SentencePracticeItem() {
 
   const playAudio = (text) => {
     const utterance = new SpeechSynthesisUtterance(text);
+    utterance.onend = () => {
+      setAudioPlayed(true);
+    };
     speechSynthesis.speak(utterance);
-    setAudioPlayed(true);
   };
 
   const [word, setWord] = useState(null);
   const [audioPlayed, setAudioPlayed] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
-  const [isCurrent, setIsCurrent] = useState(false);
-  const [star, setStar] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -66,87 +68,89 @@ export default function SentencePracticeItem() {
     // Fetch the document from Firestore
     const docSnap = await getDoc(docRef);
     const userSnap = await getDoc(userRef);
-    setStar(userSnap.data().stars)
+    console.log(userSnap.data());
+    setUser(userSnap.data());
     console.log(docSnap.data());
     console.log(userSnap.data());
 
     setWord(docSnap.data());
+    setLoading(false)
 
-    if (user && userSnap.data().currentSentencePractice) {
-      const currentDocRef = doc(
-        db,
-        "sentence_practice",
-        userSnap.data().currentSentencePractice.id
-      );
-      const currentDocSnap = await getDoc(currentDocRef);
-      if (
-        currentDocSnap.data().level < docSnap.data().level &&
-        currentDocSnap.data().id !== docSnap.data().id
-      ) {
-        const currentVocabulary = {
-          id: id,
-          started: new Date(),
-        };
-        updateDoc(userRef, {currentVocabulary: currentVocabulary})
-          .then(() => {
-            console.log("Document successfully updated!");
-          })
-          .catch((error) => {
-            console.error("Error updating document: ", error);
-          });
-      } else if(currentDocSnap.data().id === docSnap.data().id) {
-        setIsCurrent(true)
-      }
-    } else {
-      const q = query(
-        collection(db, "sentence_practice"),
-        where("level", "==", 1),
-        limit(1)
-      );
+    // if (user && userSnap.data().currentSentencePractice) {
+    //   const currentDocRef = doc(
+    //     db,
+    //     "sentence_practice",
+    //     userSnap.data().currentSentencePractice.id
+    //   );
+    //   const currentDocSnap = await getDoc(currentDocRef);
+    //   if (
+    //     currentDocSnap.data().level < docSnap.data().level &&
+    //     currentDocSnap.data().id !== docSnap.data().id
+    //   ) {
+    //     const currentVocabulary = {
+    //       id: currentDocSnap.data().level,
+    //       started: new Date(),
+    //     };
+    //     updateDoc(userRef, { currentVocabulary: currentVocabulary })
+    //       .then(() => {
+    //         console.log("Document successfully updated!");
+    //       })
+    //       .catch((error) => {
+    //         console.error("Error updating document: ", error);
+    //       });
+    //   } else if (currentDocSnap.data().id === docSnap.data().id) {
+    //     setIsCurrent(true);
+    //   }
+    // } else {
+    //   const q = query(
+    //     collection(db, "sentence_practice"),
+    //     where("level", "==", 1),
+    //     limit(1)
+    //   );
 
-      getDocs(q)
-        .then((querySnapshot) => {
-          if (!querySnapshot.empty) {
-            const document = querySnapshot.docs[0]; // Get the first document
+    //   getDocs(q)
+    //     .then((querySnapshot) => {
+    //       if (!querySnapshot.empty) {
+    //         const document = querySnapshot.docs[0]; // Get the first document
 
-            // Reference to the document
-            const docRef = doc(db, "users", user.uid);
+    //         // Reference to the document
+    //         const docRef = doc(db, "users", user.uid);
 
-            const currentVocabulary = {
-              id: document.id,
-              started: new Date(),
-            };
+    //         const currentVocabulary = {
+    //           id: document.id,
+    //           started: new Date(),
+    //         };
 
-            // Update the document
-            updateDoc(docRef, {currentVocabulary: currentVocabulary})
-              .then(() => {
-                console.log(`Document ${document.id} successfully updated!`);
-              })
-              .catch((error) => {
-                console.error("Error updating document: ", error);
-              });
-          } else {
-            console.log("No matching documents found.");
-          }
-        })
-        .catch((error) => {
-          console.error("Error getting documents: ", error);
-        });
-    }
+    //         // Update the document
+    //         updateDoc(docRef, { currentVocabulary: currentVocabulary })
+    //           .then(() => {
+    //             console.log(`Document ${document.id} successfully updated!`);
+    //           })
+    //           .catch((error) => {
+    //             console.error("Error updating document: ", error);
+    //           });
+    //       } else {
+    //         console.log("No matching documents found.");
+    //       }
+    //     })
+    //     .catch((error) => {
+    //       console.error("Error getting documents: ", error);
+    //     });
+    // }
   }
 
-  function handleStar(stars, addStar, currentUser) {
-    const userRef = doc(db, "users", currentUser.uid);
-    updateDoc(userRef, {stars: stars + addStar}).then(() => {
-      console.log(`Document ${document.id} successfully updated!`);
-      router.replace('/library/sentence_practice')
-    })
-    .catch((error) => {
-      console.error("Error updating document: ", error);
+  async function wordDone() {
+    const userId = localStorage.getItem("user_id");
+    const docRef = doc(db, "users", userId);
+    await updateDoc(docRef, {
+      currentSentencePractice: {
+        level: Number(word.level + 1),
+        started: new Date(),
+      },
+      stars: Number(user.stars + word.star),
     });
+    router.replace("/library/sentence_practice");
   }
-
-
 
   return (
     <div className="w-full h-dvh bg-cover bg-center bg-[url('/images/background_image_v2.png')] flex flex-col relative bg-black">
@@ -160,7 +164,7 @@ export default function SentencePracticeItem() {
           />
         </div>
         <div className="flex flex-row items-center sm:space-x-3 space-x-1">
-          <p className="sm:text-3xl text-base text-white font-bold">0</p>
+          <p className="sm:text-3xl text-base text-white font-bold">{user?.stars ?? 0}</p>
           <div className="sm:size-14 size-10 relative">
             <Image
               src="/images/star.png"
@@ -172,50 +176,71 @@ export default function SentencePracticeItem() {
         </div>
       </nav>
       <div className="flex justify-center items-center sm:h-[calc(100%_-_180px)] h-[calc(100%_-_150px)] sm:w-[calc(100%_-_80px)] w-[calc(100%_-_40px)] sm:mx-10 mx-5 pt-5 overflow-y-scroll">
-        <div className="flex flex-col h-full w-[calc(100%_-_20px)] rounded p-5 bg-[#d9d9d9]">
-          <div className="flex flex-row w-full items-center justify-between">
-          <div className="flex flex-row w-full items-center">
-          <PiCaretCircleLeftBold
+        {loading ? (
+          <div className="flex flex-col h-full w-[calc(100%_-_20px)] rounded p-5 bg-[#d9d9d9]">
+            <div className="flex flex-row w-full items-center">
+              <PiCaretCircleLeftBold
                 color="black"
                 size={35}
                 onClick={() => router.back()}
               />
               <p className="sm:text-2xl text-lg text-black font-semibold ml-2">
-                Library - Sentence Practice
+                Library - Vocabulary
               </p>
             </div>
-            {audioPlayed && isCurrent && (
-              <button className="rounded bg-[#766A6A] text-white p-2" onClick={() => handleStar(star, word.star, currentUser)}>
-                DONE
-              </button>
-            )}
+            <div className="flex flex-1 justify-center items-center">
+              <p className="animate-bounce text-3xl text-black">Loading ...</p>
+            </div>
           </div>
-          <div className="flex flex-row w-full mt-5">
-            <div className="flex flex-col flex-1 justify-center items-center">
-              <p className="text-black md:text-5xl text-3xl font-bold text-center mb-2">
-                {word?.word}
-              </p>
-              <p className="text-black text-xl font-medium text-center">
-                Pronunciation: <b>{word?.pronunciation}</b>
-              </p>
-              <p className="text-black text-xl font-medium text-center">
-                In Tagalog: <b>{word?.tagalog}</b>
-              </p>
-              <div className="flex flex-row mt-5 text-2xl text-black items-center">
-                {word?.star} <PiStarFill color="yellow" className="ml-2" />
+        ) : (
+          <div className="flex flex-col h-full w-[calc(100%_-_20px)] rounded p-5 bg-[#d9d9d9]">
+            <div className="flex flex-row w-full items-center justify-between">
+              <div className="flex flex-row w-full items-center">
+                <PiCaretCircleLeftBold
+                  color="black"
+                  size={35}
+                  onClick={() => router.back()}
+                />
+                <p className="sm:text-2xl text-lg text-black font-semibold ml-2">
+                  Library - Sentence Practice
+                </p>
+              </div>
+              {audioPlayed && (
+                <button
+                  className="rounded bg-[#766A6A] text-white p-2"
+                  onClick={() => wordDone()}
+                >
+                  DONE
+                </button>
+              )}
+            </div>
+            <div className="flex flex-row w-full mt-5">
+              <div className="flex flex-col flex-1 justify-center items-center">
+                <p className="text-black md:text-5xl text-3xl font-bold text-center mb-2">
+                  {word?.word}
+                </p>
+                <p className="text-black text-xl font-medium text-center">
+                  Pronunciation: <b>{word?.pronunciation}</b>
+                </p>
+                <p className="text-black text-xl font-medium text-center">
+                  In Tagalog: <b>{word?.tagalog}</b>
+                </p>
+                <div className="flex flex-row mt-5 text-2xl text-black items-center">
+                  {word?.star} <PiStarFill color="yellow" className="ml-2" />
+                </div>
               </div>
             </div>
+            <div className="flex flex-col space-y-2 flex-grow w-full justify-center items-center">
+              <button
+                onClick={() => playAudio(word?.word)}
+                className="outline-none flex justify-center items-center md:size-20 size-16 rounded-full bg-[#766A6A]"
+              >
+                <PiSpeakerHighFill size={40} color="white" />
+              </button>
+              <p className="text-lg text-gray-800">Click to play sound</p>
+            </div>
           </div>
-          <div className="flex flex-col space-y-2 flex-grow w-full justify-center items-center">
-            <button
-              onClick={() => playAudio(word?.word)}
-              className="outline-none flex justify-center items-center md:size-20 size-16 rounded-full bg-[#766A6A]"
-            >
-              <PiSpeakerHighFill size={40} color="white" />
-            </button>
-            <p className="text-lg text-gray-800">Click to play sound</p>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

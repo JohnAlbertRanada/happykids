@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 
 import { auth, db } from "@/app/firebase.js";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import {
   PiCaretCircleLeftBold,
   PiEar,
@@ -39,6 +39,7 @@ export default function SentencePronunciationItem() {
   const [result, setResult] = useState();
   const [loading, setLoading] = useState(true);
   const [waiting, setWaiting] = useState(false);
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
     init(id);
@@ -46,6 +47,14 @@ export default function SentencePronunciationItem() {
 
   async function init(id) {
     setLoading(true);
+    const userId = localStorage.getItem("user_id");
+
+    const userRef = doc(db, "users", userId);
+
+    // Fetch the document from Firestore
+    const userSnap = await getDoc(userRef);
+    console.log(userSnap.data());
+    setUser(userSnap.data());
     const docRef = doc(db, "sentence_pronunciation", id);
 
     // Fetch the document from Firestore
@@ -143,6 +152,35 @@ export default function SentencePronunciationItem() {
     setResult();
   }
 
+  async function handleDone() {
+    const userId = localStorage.getItem("user_id");
+    const docRef = doc(db, "users", userId);
+    console.log(user)
+    console.log((user.fluency_average.average * user.fluency_average.count))
+    console.log(((user.fluency_average.average * user.fluency_average.count) + result.fluency_score))
+    console.log(((user.fluency_average.average * user.fluency_average.count) + result.fluency_score) / (user.fluency_average.count + 1))
+    await updateDoc(docRef, {
+      currentSentencePronunciation: {
+        level: Number(word.level + 1),
+        started: new Date(),
+      },
+      stars: Number(user.stars + word.star),
+      pronunciation_average: {
+        count: Number(user.pronunciation_average.count + 1),
+        average: ((user.pronunciation_average.average * user.pronunciation_average.count) + result.pronunciation_score) / (user.pronunciation_average.count + 1)
+      },
+      intonation_average: {
+        count: Number(user.intonation_average.count + 1),
+        average: ((user.intonation_average.average * user.intonation_average.count) + result.intonation_score) / (user.intonation_average.count + 1)
+      },
+      fluency_average: {
+        count: Number(user.fluency_average.count + 1),
+        average: ((user.fluency_average.average * user.fluency_average.count) + result.fluency_score) / (user.fluency_average.count + 1)
+      },
+    });
+    router.replace("/activity/sentence_pronunciation");
+  }
+
   return (
     <div className="w-full h-dvh bg-cover bg-center bg-[url('/images/background_image_v2.png')] flex flex-col relative bg-black">
       <nav className="flex flex-row justify-between items-center w-full sm:px-10 px-5 mt-2">
@@ -155,7 +193,7 @@ export default function SentencePronunciationItem() {
           />
         </div>
         <div className="flex flex-row items-center sm:space-x-3 space-x-1">
-          <p className="sm:text-3xl text-base text-white font-bold">0</p>
+          <p className="sm:text-3xl text-base text-white font-bold">{user?.stars ?? 0}</p>
           <div className="sm:size-14 size-10 relative">
             <Image
               src="/images/star.png"
@@ -169,9 +207,16 @@ export default function SentencePronunciationItem() {
       <div className="flex justify-center items-center sm:h-[calc(100%_-_180px)] h-[calc(100%_-_150px)] sm:w-[calc(100%_-_80px)] w-[calc(100%_-_40px)] sm:mx-10 mx-5 mt-5 overflow-y-scroll">
         {loading ? (
           <div className="flex flex-col h-full w-[calc(100%_-_20px)] rounded p-5 bg-[#d9d9d9]">
-            <p className="sm:text-2xl text-lg text-black font-semibold">
-              Sentence Pronunciation
-            </p>
+            <div className="flex flex-row w-full items-center">
+              <PiCaretCircleLeftBold
+                color="black"
+                size={35}
+                onClick={() => router.back()}
+              />
+              <p className="sm:text-2xl text-lg text-black font-semibold ml-2">
+                Activity - Sentence Pronunciation
+              </p>
+            </div>
             <div className="flex flex-1 justify-center items-center">
               <p className="animate-bounce text-3xl text-black">Loading ...</p>
             </div>
@@ -275,9 +320,9 @@ export default function SentencePronunciationItem() {
                 >
                   Try again
                 </button>
-                <button className="bg-[#8e8282] text-white h-10 p-2 rounded">
+                {result.transcription !== null && <button className="bg-[#8e8282] text-white h-10 p-2 rounded" onClick={() => handleDone()}>
                   Next
-                </button>
+                </button>}
               </div>
             ) : (
               <div className="flex flex-col space-y-2 flex-grow w-full justify-center items-center">

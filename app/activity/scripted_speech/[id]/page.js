@@ -74,6 +74,7 @@ export default function ScriptedSpeechItem() {
   const [recording, setRecording] = useState(false);
   const [conversations, setConversations] = useState([]);
   const [results, setResults] = useState([]);
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
     init(id);
@@ -81,6 +82,14 @@ export default function ScriptedSpeechItem() {
 
   async function init(id) {
     setLoading(true);
+    const userId = localStorage.getItem("user_id");
+
+    const userRef = doc(db, "users", userId);
+
+    // Fetch the document from Firestore
+    const userSnap = await getDoc(userRef);
+    console.log(userSnap.data());
+    setUser(userSnap.data());
     const docRef = doc(db, "scripted_speech", id);
 
     // Fetch the document from Firestore
@@ -283,7 +292,7 @@ export default function ScriptedSpeechItem() {
           />
         </div>
         <div className="flex flex-row items-center sm:space-x-3 space-x-1">
-          <p className="sm:text-3xl text-base text-white font-bold">0</p>
+          <p className="sm:text-3xl text-base text-white font-bold">{user?.stars ?? 0}</p>
           <div className="sm:size-14 size-10 relative">
             <Image
               src="/images/star.png"

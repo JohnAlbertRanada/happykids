@@ -5,7 +5,7 @@ import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "@/app/firebase";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, doc, average } from "firebase/firestore";
 import { PiEye, PiEyeClosed } from "react-icons/pi";
 
 export default function Signup() {
@@ -60,6 +60,18 @@ export default function Signup() {
             level: 1,
             started: new Date()
           },
+          pronunciation_average: {
+            average: 0,
+            count: 0
+          },
+          intonation_average: {
+            average: 0,
+            count: 0
+          },
+          fluency_average: {
+            average: 0,
+            count: 0
+          }
           // Add more fields as needed
         });
         // const usersCollectionRef = collection(db, "users");

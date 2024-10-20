@@ -4,14 +4,20 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { auth, db } from "@/app/firebase.js";
 import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, doc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
-import { PiArrowArcLeftBold, PiCaretCircleLeftBold } from "react-icons/pi";
+import { PiArrowArcLeftBold, PiCaretCircleLeftBold, PiCheckBold, PiLockSimpleBold } from "react-icons/pi";
 
 export default function SpeechScripted() {
   const router = useRouter();
 
   const [sentences, setSentences] = useState([]);
+  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(null)
+
+  const currentSentence = sentences.find(
+    (sentence) => sentence.level === user.currentScriptedSpeech.level
+  ) ?? { id: "#", level: 1 };
 
   // useEffect(() => {
   //   const unsubscribe = onAuthStateChanged(auth, (sentence) => {
@@ -26,6 +32,14 @@ export default function SpeechScripted() {
   }, []);
 
   const fetchData = async () => {
+    const userId = localStorage.getItem("user_id");
+
+    const docRef = doc(db, "users", userId);
+
+    // Fetch the document from Firestore
+    const docSnap = await getDoc(docRef);
+    console.log(docSnap.data());
+    setUser(docSnap.data());
     const wordRef = collection(db, "scripted_speech");
     const q = query(wordRef, orderBy("level", "asc"));
 
@@ -37,6 +51,7 @@ export default function SpeechScripted() {
       };
     });
     setSentences(result);
+    setLoading(false)
   };
 
   const goToSentence = (id) => {
@@ -55,7 +70,7 @@ export default function SpeechScripted() {
           />
         </div>
         <div className="flex flex-row items-center sm:space-x-3 space-x-1">
-          <p className="sm:text-3xl text-base text-white font-bold">0</p>
+          <p className="sm:text-3xl text-base text-white font-bold">{user?.stars ?? 0}</p>
           <div className="sm:size-14 size-10 relative">
             <Image
               src="/images/star.png"
@@ -67,26 +82,51 @@ export default function SpeechScripted() {
         </div>
       </nav>
       <div className="flex flex-row w-full items-center ml-10">
-        <PiCaretCircleLeftBold color="white" size={40} onClick={() => router.back()} />
+        <PiCaretCircleLeftBold
+          color="white"
+          size={40}
+          onClick={() => router.back()}
+        />
         <p className="text-white text-3xl font-semibold ml-5">
           Activity - Scripted Speech
         </p>
       </div>
-      <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4 sm:max-h-[calc(100%_-_230px)] max-h-[calc(100%_-_2000px)] sm:w-[calc(100%_-_80px)] w-[calc(100%_-_40px)] sm:mx-10 mx-5 mt-5 overflow-y-scroll">
-        {sentences?.map((sentence, index) => {
-          return (
-            <button
-              key={index}
-              onClick={() => goToSentence(sentence.id)}
-              className="w-full bg-[#766A6A] rounded flex justify-center items-center h-16"
-            >
-              <p className="text-white text-lg">
-                Conversation {sentence.level}
-              </p>
-            </button>
-          );
-        })}
-      </div>
+      {loading ? (
+        <div className="flex flex-1 justify-center items-center">
+          <p className="animate-bounce text-3xl text-white font-semibold">
+            Loading ...
+          </p>
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4 sm:max-h-[calc(100%_-_230px)] max-h-[calc(100%_-_2000px)] sm:w-[calc(100%_-_80px)] w-[calc(100%_-_40px)] sm:mx-10 mx-5 mt-5 overflow-y-scroll">
+          {sentences?.map((sentence, index) => {
+            return (
+              <button
+                key={index}
+                onClick={() => goToSentence(sentence.id)}
+                disabled={
+                  currentSentence.level > sentence.level ||
+                  currentSentence.level < sentence.level
+                }
+                className="w-full bg-[#766A6A] rounded flex justify-center items-center h-16"
+              >
+                {currentSentence.id === sentence.id ? (
+                  <p className="text-white text-lg">Conversation {sentence?.level}</p>
+                ) : currentSentence.level > sentence.level ? (
+                  <div className="flex flex-row gap-3 items-center">
+                    <p className="text-white text-opacity-50 text-lg">
+                      Conversation {sentence?.level}
+                    </p>
+                    <PiCheckBold />
+                  </div>
+                ) : (
+                  <PiLockSimpleBold />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
