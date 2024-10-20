@@ -143,7 +143,6 @@ export default function Profile() {
     signOut(auth)
       .then(() => {
         // User successfully signed out
-        alert("You have been logged out successfully.");
         console.log("User logged out successfully.");
         // Optionally redirect the user to a login or home page
         localStorage.removeItem("user_id");

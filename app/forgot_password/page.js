@@ -62,14 +62,14 @@ export default function ForgotPassword() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />}
-        {!success && <button className="bg-[#766A6A] h-8" onClick={() => checkUserExists(email)}>
+        {!success && <button className="bg-[#766A6A] h-8 text-white" onClick={() => checkUserExists(email)}>
           Forgot Password
         </button>}
         <p className="my-2 text-red-500">{errorMessage}</p>
         {success && <p className="my-2 text-green-500">Password reset email sent successfully. Please check your email.</p>}
-        {success && <button className="bg-[#766A6A] h-8" onClick={() => router.replace("/login")}>
+        <button className="bg-[#766A6A] h-8 text-white" onClick={() => router.replace("/login")}>
           Go to Login
-        </button>}
+        </button>
       </div>
     </div>
   );

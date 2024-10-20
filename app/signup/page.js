@@ -38,17 +38,37 @@ export default function Signup() {
           createdAt: new Date(),
           currentVocabulary: {
             level: 1,
-            start
-          }
+            started: new Date()
+          },
+          currentSentencePractice: {
+            level: 1,
+            started: new Date()
+          },
+          currentConversation: {
+            level: 1,
+            started: new Date()
+          },
+          currentWordPronunciation: {
+            level: 1,
+            started: new Date()
+          },
+          currentSentencePronunciation: {
+            level: 1,
+            started: new Date()
+          },
+          currentScriptedSpeech: {
+            level: 1,
+            started: new Date()
+          },
           // Add more fields as needed
         });
-        const usersCollectionRef = collection(db, "users");
+        // const usersCollectionRef = collection(db, "users");
 
-        // Reference to a specific document in the "users" collection (e.g., a user with ID 'userID')
-        const userDocRef = doc(usersCollectionRef, user.uid);
+        // // Reference to a specific document in the "users" collection (e.g., a user with ID 'userID')
+        // const userDocRef = doc(usersCollectionRef, user.uid);
 
-        // Reference to a subcollection within that specific document (e.g., "orders" subcollection)
-        const libraryCollectionRef = collection(userDocRef, "library");
+        // // Reference to a subcollection within that specific document (e.g., "orders" subcollection)
+        // const libraryCollectionRef = collection(userDocRef, "library");
         
         router.replace("/login");
       })
