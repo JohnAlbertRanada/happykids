@@ -3,18 +3,19 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import {
+  PiArrowCounterClockwise,
   PiCaretCircleLeftBold,
   PiMicrophone,
   PiSpeakerSimpleHighFill,
   PiStop,
   PiUser,
 } from "react-icons/pi";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/app/firebase";
 import { useParams, useRouter } from "next/navigation";
 
 export default function ScriptedSpeechItem() {
-  const router  = useRouter()
+  const router = useRouter();
   const idRef = useRef(0);
   let mediaRecorderRef = useRef();
   let audioChunks = [];
@@ -74,7 +75,7 @@ export default function ScriptedSpeechItem() {
   const [recording, setRecording] = useState(false);
   const [conversations, setConversations] = useState([]);
   const [results, setResults] = useState([]);
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     init(id);
@@ -245,7 +246,7 @@ export default function ScriptedSpeechItem() {
       console.log(result, typeof result);
       let data = JSON.parse(result);
       setResults((prev) => [...prev, { ...data, id: currentScriptId }]);
-
+      console.log(results);
       // setWaiting(false);
       // setResult(JSON.parse(results));
     } catch (error) {
@@ -280,6 +281,60 @@ export default function ScriptedSpeechItem() {
     }
   }
 
+  const playConvo = (text) => {
+    console.log(text);
+    const utterance = new SpeechSynthesisUtterance(text);
+    speechSynthesis.speak(utterance);
+  };
+
+  function handleReset() {
+    document.getElementById("audioBlob").value = null;
+    setRecording(false);
+    setResults([]);
+  }
+
+  async function handleDone() {
+    const userId = localStorage.getItem("user_id");
+    const docRef = doc(db, "users", userId);
+
+    let resultCount = results.length;
+    let pronunciation_score = 0;
+    let intonation_score = 0;
+    let fluency_score = 0;
+
+    for (let index = 0; index < results.length; index++) {
+      const element = results[index];
+      pronunciation_score += element.pronunciation_score
+      intonation_score += element.intonation_score
+      fluency_score += element.fluency_score
+    }
+
+    console.log(pronunciation_score, intonation_score, fluency_score)
+    // console.log((user.fluency_average.average * user.fluency_average.count))
+    // console.log(((user.fluency_average.average * user.fluency_average.count) + result.fluency_score))
+    console.log(((user.fluency_average.average * user.fluency_average.count) + fluency_score) / (user.fluency_average.count + resultCount))
+    await updateDoc(docRef, {
+      currentSentencePronunciation: {
+        level: Number(word.level + 1),
+        started: new Date(),
+      },
+      stars: Number(user.stars + word.star),
+      pronunciation_average: {
+        count: Number(user.pronunciation_average.count + resultCount),
+        average: ((user.pronunciation_average.average * user.pronunciation_average.count) + pronunciation_score) / (user.pronunciation_average.count + resultCount)
+      },
+      intonation_average: {
+        count: Number(user.intonation_average.count + resultCount),
+        average: ((user.intonation_average.average * user.intonation_average.count) + intonation_score) / (user.intonation_average.count + resultCount)
+      },
+      fluency_average: {
+        count: Number(user.fluency_average.count + resultCount),
+        average: ((user.fluency_average.average * user.fluency_average.count) + fluency_score) / (user.fluency_average.count + resultCount)
+      },
+    });
+    router.replace("/activity/scripted_speech");
+  }
+
   return (
     <div className="w-full h-dvh bg-cover bg-center bg-[url('/images/background_image_v2.png')] flex flex-col relative bg-black">
       <nav className="flex flex-row justify-between items-center w-full sm:px-10 px-5 mt-2">
@@ -292,7 +347,9 @@ export default function ScriptedSpeechItem() {
           />
         </div>
         <div className="flex flex-row items-center sm:space-x-3 space-x-1">
-          <p className="sm:text-3xl text-base text-white font-bold">{user?.stars ?? 0}</p>
+          <p className="sm:text-3xl text-base text-white font-bold">
+            {user?.stars ?? 0}
+          </p>
           <div className="sm:size-14 size-10 relative">
             <Image
               src="/images/star.png"
@@ -304,10 +361,10 @@ export default function ScriptedSpeechItem() {
         </div>
       </nav>
       <div className="flex justify-center items-center sm:h-[calc(100%_-_180px)] h-[calc(100%_-_150px)] sm:w-[calc(100%_-_80px)] w-[calc(100%_-_40px)] sm:mx-10 mx-5 pt-5 overflow-y-scroll">
-        <div className="flex flex-col h-full w-[calc(100%_-_20px)] rounded p-5 bg-[#d9d9d9]">
-          <div className="flex flex-row w-full items-center justify-between">
-          <div className="flex flex-row w-full items-center">
-          <PiCaretCircleLeftBold
+        {loading ? (
+          <div className="flex flex-col h-full w-[calc(100%_-_20px)] rounded p-5 bg-[#d9d9d9]">
+            <div className="flex flex-row w-full items-center">
+              <PiCaretCircleLeftBold
                 color="black"
                 size={35}
                 onClick={() => router.back()}
@@ -316,154 +373,192 @@ export default function ScriptedSpeechItem() {
                 Activity - Scripted Speech
               </p>
             </div>
-            {/* {audioPlayed && <button className="rounded bg-[#766A6A] text-white p-2">
+            <div className="flex flex-1 justify-center items-center">
+              <p className="animate-bounce text-3xl text-black">Loading ...</p>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col h-full w-[calc(100%_-_20px)] rounded p-5 bg-[#d9d9d9]">
+            <div className="flex flex-row w-full items-center justify-between">
+              <div className="flex flex-row w-full items-center">
+                <PiCaretCircleLeftBold
+                  color="black"
+                  size={35}
+                  onClick={() => router.back()}
+                />
+                <p className="sm:text-2xl text-lg text-black font-semibold ml-2">
+                  Activity - Scripted Speech
+                </p>
+              </div>
+              <div className="flex flex-row gap-5">
+                {started && <button className="rounded bg-[#766A6A] text-white p-2" onClick={() => handleReset()}>
+                  RESET
+                </button>}
+                {started && currentScriptId === conversations.length - 1 && <button className="rounded bg-[#766A6A] text-white p-2" onClick={() => handleDone()}>
+                  DONE
+                </button>}
+              </div>
+              {/* {audioPlayed && <button className="rounded bg-[#766A6A] text-white p-2">
               DONE
             </button>} */}
-          </div>
-          {started ? (
-            <div
-              className="flex flex-col w-full overflow-y-scroll my-5"
-              id="scroll"
-            >
-              {conversations.map((conversation, index) => {
-                return conversation.role === "computer" ? (
-                  <div
-                    className={`flex flex-row w-[calc(100%_-_20px)] justify-start mb-5 ${
-                      index > currentScriptId && "invisible"
-                    }`}
-                    id={"box" + index}
-                  >
-                    <div className="relative flex justify-center items-center size-10 rounded-full bg-white border border-black mr-5">
-                      <PiUser size={25} color="black" />
-                      <button
-                        className="absolute -bottom-2 -right-2 z-10 p-2 rounded-full bg-[#766A6A] w-fit h-fit"
-                        onClick={null}
-                      >
-                        <PiSpeakerSimpleHighFill size={10} />
-                      </button>
+            </div>
+            {started ? (
+              <div
+                className="flex flex-col w-full overflow-y-scroll my-5"
+                id="scroll"
+              >
+                {conversations.map((conversation, index) => {
+                  return conversation.role === "computer" ? (
+                    <div
+                      className={`flex flex-row w-[calc(100%_-_20px)] justify-start mb-5 ${
+                        index > currentScriptId && "invisible"
+                      }`}
+                      id={"box" + index}
+                    >
+                      <div className="relative flex justify-center items-center size-10 rounded-full bg-white border border-black mr-5">
+                        <PiUser size={25} color="black" />
+                        <button
+                          className="absolute -bottom-2 -right-2 z-10 p-2 rounded-full bg-[#766A6A] w-fit h-fit"
+                          onClick={() => playConvo(conversation.message)}
+                        >
+                          <PiSpeakerSimpleHighFill size={10} />
+                        </button>
+                      </div>
+                      <div className="border border-gray-500 rounded p-2">
+                        <p
+                          id={index.toString()}
+                          className={`text-black sm:text-xl text-lg relative w-[max-content]`}
+                        >
+                          {conversation.message}
+                        </p>
+                      </div>
                     </div>
-                    <div className="border border-gray-500 rounded p-2">
-                      <p
-                        id={index.toString()}
-                        className={`text-black sm:text-xl text-lg relative w-[max-content]`}
-                      >
-                        {conversation.message}
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  <div
-                    className={`flex flex-row w-[calc(100%_-_36px)] justify-end mb-5 ${
-                      index > currentScriptId && "invisible"
-                    }`}
-                    id={"box" + index}
-                  >
-                    {results.find((result) => result.id === index) !== undefined && <div class="relative size-12 mr-2">
-                      <svg
-                        class="size-full -rotate-90"
-                        viewBox="0 0 36 36"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <circle
-                          cx="18"
-                          cy="18"
-                          r="16"
-                          fill="none"
-                          class="stroke-current text-gray-200 dark:text-neutral-700"
-                          stroke-width="2"
-                        ></circle>
+                  ) : (
+                    <div
+                      className={`flex flex-row w-[calc(100%_-_36px)] gap-2 justify-end mb-5 ${
+                        index > currentScriptId && "invisible"
+                      }`}
+                      id={"box" + index}
+                    >
+                      {results.find((result) => result.id === index) !==
+                        undefined && (
+                        <div class="relative size-12 mr-2">
+                          <svg
+                            class="size-full -rotate-90"
+                            viewBox="0 0 36 36"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <circle
+                              cx="18"
+                              cy="18"
+                              r="16"
+                              fill="none"
+                              class="stroke-current text-gray-200 dark:text-neutral-700"
+                              stroke-width="2"
+                            ></circle>
 
-                        <circle
-                          cx="18"
-                          cy="18"
-                          r="16"
-                          fill="none"
-                          class="stroke-current text-[#766A6A] dark:text-[#766A6A]"
-                          stroke-width="2"
-                          stroke-dasharray="100"
-                          stroke-dashoffset={
-                            results.find((result) => result.id === index)
-                              ?.penalty >
-                            results.find((result) => result.id === index)?.average_score || results.find((result) => result.id === index).transcription === null
-                              ? 0
-                              : 100 -
-                                Math.round(
+                            <circle
+                              cx="18"
+                              cy="18"
+                              r="16"
+                              fill="none"
+                              class="stroke-current text-[#766A6A] dark:text-[#766A6A]"
+                              stroke-width="2"
+                              stroke-dasharray="100"
+                              stroke-dashoffset={
+                                results.find((result) => result.id === index)
+                                  ?.penalty >
                                   results.find((result) => result.id === index)
-                                    ?.average_score -
+                                    ?.average_score ||
+                                results.find((result) => result.id === index)
+                                  .transcription === null
+                                  ? 0
+                                  : 100 -
+                                    Math.round(
+                                      results.find(
+                                        (result) => result.id === index
+                                      )?.average_score -
+                                        results.find(
+                                          (result) => result.id === index
+                                        )?.penalty
+                                    )
+                              }
+                              stroke-linecap="round"
+                            ></circle>
+                          </svg>
+
+                          <div class="absolute top-1/2 start-1/2 transform -translate-y-1/2 -translate-x-1/2">
+                            <span class="text-center text-xs font-bold text-[#766A6A] dark:text-[#766A6A]">
+                              {results.find((result) => result.id === index)
+                                ?.penalty >
+                                results.find((result) => result.id === index)
+                                  ?.average_score ||
+                              results.find((result) => result.id === index)
+                                .transcription === null
+                                ? 0
+                                : (
+                                    results.find(
+                                      (result) => result.id === index
+                                    )?.average_score -
                                     results.find(
                                       (result) => result.id === index
                                     )?.penalty
-                                )
-                          }
-                          stroke-linecap="round"
-                        ></circle>
-                      </svg>
-
-                      <div class="absolute top-1/2 start-1/2 transform -translate-y-1/2 -translate-x-1/2">
-                        <span class="text-center text-xs font-bold text-[#766A6A] dark:text-[#766A6A]">
-                          {results.find((result) => result.id === index)
-                            ?.penalty >
-                          results.find((result) => result.id === index)?.average_score || results.find((result) => result.id === index).transcription === null
-                            ? 0
-                            : (
-                                results.find((result) => result.id === index)
-                                  ?.average_score -
-                                results.find((result) => result.id === index)
-                                  ?.penalty
-                              ).toFixed(2)}
-                          %
-                        </span>
+                                  ).toFixed(2)}
+                              %
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      <input type="hidden" id="audioBlob" name="audio" />
+                      {recording && currentScriptId === index ? (
+                        <button
+                          className="outline-none flex justify-center items-center md:size-10 size-8 rounded-full bg-[#766A6A] mr-2"
+                          onClick={() => stopSpeaking(conversation.message)}
+                        >
+                          <PiStop size={12} color="white" />
+                        </button>
+                      ) : currentScriptId === index ? (
+                        <button
+                          className="outline-none flex justify-center items-center md:size-10 size-8 rounded-full bg-[#766A6A] mr-2"
+                          onClick={() => startSpeaking(conversation.message)}
+                        >
+                          <PiMicrophone size={12} color="white" />
+                        </button>
+                      ) : null}
+                      <div className="border border-gray-500 rounded p-2">
+                        <p
+                          id={index.toString()}
+                          className={`text-black sm:text-xl text-lg relative w-[max-content]`}
+                        >
+                          {conversation.message}
+                        </p>
                       </div>
-                    </div>}
-                    <input type="hidden" id="audioBlob" name="audio" />
-                    {recording ? (
-                      <button
-                        className="outline-none flex justify-center items-center md:size-10 size-8 rounded-full bg-[#766A6A] mr-2"
-                        onClick={() => stopSpeaking(conversation.message)}
-                      >
-                        <PiStop size={12} color="white" />
-                      </button>
-                    ) : (
-                      <button
-                        className="outline-none flex justify-center items-center md:size-10 size-8 rounded-full bg-[#766A6A] mr-2"
-                        onClick={() => startSpeaking(conversation.message)}
-                      >
-                        <PiMicrophone size={12} color="white" />
-                      </button>
-                    )}
-                    <div className="border border-gray-500 rounded p-2">
-                      <p
-                        id={index.toString()}
-                        className={`text-black sm:text-xl text-lg relative w-[max-content]`}
-                      >
-                        {conversation.message}
-                      </p>
+                      <div className="relative flex justify-center items-center size-10 rounded-full bg-white border border-black ml-5">
+                        <PiUser size={25} color="black" />
+                        <button
+                          className="absolute -bottom-2 -right-2 z-10 p-2 rounded-full bg-[#766A6A] w-fit h-fit"
+                          onClick={() => playConvo(conversation.message)}
+                        >
+                          <PiSpeakerSimpleHighFill size={10} />
+                        </button>
+                      </div>
                     </div>
-                    <div className="relative flex justify-center items-center size-10 rounded-full bg-white border border-black ml-5">
-                      <PiUser size={25} color="black" />
-                      <button
-                        className="absolute -bottom-2 -right-2 z-10 p-2 rounded-full bg-[#766A6A] w-fit h-fit"
-                        onClick={null}
-                      >
-                        <PiSpeakerSimpleHighFill size={10} />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <button
-              className="rounded bg-[#766A6A] text-white p-2 w-min m-auto"
-              onClick={() => {
-                setStarted(true);
-              }}
-              disabled={conversations.length === 0}
-            >
-              START
-            </button>
-          )}
-        </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <button
+                className="rounded bg-[#766A6A] text-white p-2 w-min m-auto"
+                onClick={() => {
+                  setStarted(true);
+                }}
+                disabled={conversations.length === 0}
+              >
+                START
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
