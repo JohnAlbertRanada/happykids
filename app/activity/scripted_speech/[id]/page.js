@@ -76,6 +76,8 @@ export default function ScriptedSpeechItem() {
   const [conversations, setConversations] = useState([]);
   const [results, setResults] = useState([]);
   const [user, setUser] = useState(null);
+  const [level, setLevel] = useState(1)
+  const [star, setStar] = useState(1)
 
   useEffect(() => {
     init(id);
@@ -98,6 +100,8 @@ export default function ScriptedSpeechItem() {
     console.log("Scripted Speech: ", docSnap.data());
 
     setConversations(docSnap.data().conversations);
+    setLevel(docSnap.data().level)
+    setStar(docSnap.data().star)
     setLoading(false);
   }
 
@@ -314,11 +318,11 @@ export default function ScriptedSpeechItem() {
     // console.log(((user.fluency_average.average * user.fluency_average.count) + result.fluency_score))
     console.log(((user.fluency_average.average * user.fluency_average.count) + fluency_score) / (user.fluency_average.count + resultCount))
     await updateDoc(docRef, {
-      currentSentencePronunciation: {
-        level: Number(word.level + 1),
+      currentScriptedSpeech: {
+        level: Number(level + 1),
         started: new Date(),
       },
-      stars: Number(user.stars + word.star),
+      stars: Number(user.stars + star),
       pronunciation_average: {
         count: Number(user.pronunciation_average.count + resultCount),
         average: ((user.pronunciation_average.average * user.pronunciation_average.count) + pronunciation_score) / (user.pronunciation_average.count + resultCount)

@@ -77,64 +77,75 @@ export default function Profile() {
   }, []);
 
   async function init() {
-    setLoading(true)
+    setLoading(true);
     const userId = localStorage.getItem("user_id");
 
     if (!localStorage.getItem("user_id")) {
       router.replace("/login");
     } else {
+      console.log(userId);
+      const docRef = doc(db, "users", userId);
 
-    console.log(userId);
-    const docRef = doc(db, "users", userId);
-
-    // Fetch the document from Firestore
-    const docSnap = await getDoc(docRef);
-    console.log(docSnap.data());
-    setUser(docSnap.data());
-    setLoading(false)
+      // Fetch the document from Firestore
+      const docSnap = await getDoc(docRef);
+      console.log(docSnap.data());
+      setUser(docSnap.data());
+      setLoading(false);
     }
   }
 
   const RadarData = {
-    labels: [
-      "Finger Strength",
-      "Power",
-      "Endurance",
-      "Stability",
-      "Flexability",
-    ],
+    labels: ["Pronunciation", "Intonation", "Fluency"],
     datasets: [
       {
-        label: "March",
-        backgroundColor: "rgba(34, 202, 236, .2)",
-        borderColor: "rgba(34, 202, 236, 1)",
-        pointBackgroundColor: "rgba(34, 202, 236, 1)",
+        backgroundColor: "rgba(118, 106, 106, 0.5)",
+        borderColor: "rgba(118, 106, 106, 0.5)",
+        pointBackgroundColor: "#766A6A",
         poingBorderColor: "#fff",
         pointHoverBackgroundColor: "#fff",
-        pointHoverBorderColor: "rgba(34, 202, 236, 1)",
-        data: [13, 10, 12, 6, 5],
+        pointHoverBorderColor: "#766A6A",
+        data: [
+          user?.pronunciation_average?.average,
+          user?.intonation_average?.average,
+          user?.fluency_average?.average,
+        ],
       },
     ],
   };
 
+  console.log(
+    Number(user?.pronunciation_average?.average),
+    user?.intonation_average?.average,
+    user?.fluency_average?.average
+  );
+
   const RadarOptions = {
     responsive: true,
     maintainAspectRatio: true,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      title: {
+        display: false,
+      },
+    },
     scale: {
       ticks: {
         min: 0,
         max: 16,
-        stepSize: 2,
+        stepSize: 10,
         showLabelBackdrop: false,
         backdropColor: "rgba(203, 197, 11, 1)",
       },
       angleLines: {
         color: "rgba(255, 255, 255, .3)",
-        lineWidth: 1,
+        lineWidth: 0,
       },
       gridLines: {
         color: "rgba(255, 255, 255, .3)",
-        circular: true,
+        circular: false,
+        lineWidth: 0,
       },
     },
   };
@@ -226,7 +237,9 @@ export default function Profile() {
       </nav>
       {loading ? (
         <div className="flex flex-1 justify-center items-center">
-          <p className="animate-bounce text-3xl text-white font-semibold">Loading ...</p>
+          <p className="animate-bounce text-3xl text-white font-semibold">
+            Loading ...
+          </p>
         </div>
       ) : (
         <div className="flex flex-row flex-wrap w-[calc(100%_-_80px)] sm:max-h-[calc(100%_-_210px)] max-h-[calc(100%_-_180px)] mx-10 justify-evenly items-center overflow-y-scroll">
@@ -273,17 +286,23 @@ export default function Profile() {
               >
                 <p className="text-gray-600">Change Password</p>
               </button>
-              <button className="p-1 my-1 outline-none border-none bg-[#d9d9d9]" onClick={() => router.push("/terms_of_use")}>
+              <button
+                className="p-1 my-1 outline-none border-none bg-[#d9d9d9]"
+                onClick={() => router.push("/terms_of_use")}
+              >
                 <p className="text-gray-600">Terms of Use</p>
               </button>
-              <button className="p-1 my-1 outline-none border-none bg-[#d9d9d9]" onClick={() => router.push("/privacy_policy")}>
+              <button
+                className="p-1 my-1 outline-none border-none bg-[#d9d9d9]"
+                onClick={() => router.push("/privacy_policy")}
+              >
                 <p className="text-gray-600">Privacy Policy</p>
               </button>
             </div>
           </div>
-          {/* <div className="flex justify-center items-center lg:w-[calc(50%_-_16px)] w-[calc(100%_-_16px)] md:my-0 my-2 mx-2 p-5 bg-[#d9d9d9] lg:h-full max-h-fit">
-          <Radar data={RadarData} options={RadarOptions} />
-        </div> */}
+          <div className="flex justify-center items-center lg:w-[calc(50%_-_16px)] w-[calc(100%_-_16px)] md:my-0 my-2 mx-2 bg-[#d9d9d9] lg:h-72 max-h-fit">
+            <Radar data={RadarData} options={RadarOptions} />
+          </div>
         </div>
       )}
       <div className="flex flex-row justify-evenly items-start w-full h-20 fixed bottom-0 left-0">
