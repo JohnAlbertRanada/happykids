@@ -1,4 +1,11 @@
+"use client"
+
+import { useRouter } from "next/navigation";
+import { PiArrowLeftBold } from "react-icons/pi";
+
 export default function TermsOfUse() {
+
+  const router = useRouter()
 
   const terms = `
   Terms of Use
@@ -34,6 +41,9 @@ export default function TermsOfUse() {
   return (
     <div className="w-full h-dvh bg-cover bg-center bg-[url('/images/background_image_v2.png')] flex flex-col relative bg-black">
       <div className="p-10 whitespace-pre w-2/3 mx-auto h-full bg-white text-black text-wrap overflow-y-scroll">
+        <button className="w-fit h-fit outline-none border-none bg-transparent" onClick={() => router.back()}>
+          <PiArrowLeftBold color="black" size={20} />
+        </button>
           {terms}
       </div>
     </div>

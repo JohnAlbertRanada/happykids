@@ -1,5 +1,11 @@
+"use client"
+
+import { useRouter } from "next/navigation";
+import { PiArrowLeftBold } from "react-icons/pi";
+
 export default function PrivacyPolicy() {
 
+  const router = useRouter()
   const privacy = `
   Privacy Policy for Happy Kids
           
@@ -43,11 +49,14 @@ export default function PrivacyPolicy() {
 
     By email: happykids@gmail.com
 
-  `
+  `;
   return (
     <div className="w-full h-dvh bg-cover bg-center bg-[url('/images/background_image_v2.png')] flex flex-col relative bg-black">
       <div className="p-10 whitespace-pre w-2/3 mx-auto h-full bg-white text-black text-wrap overflow-y-scroll">
-          {privacy}
+        <button className="w-fit h-fit outline-none border-none bg-transparent" onClick={() => router.back()}>
+          <PiArrowLeftBold color="black" size={20} />
+        </button>
+        {privacy}
       </div>
     </div>
   );
