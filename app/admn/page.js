@@ -5,6 +5,7 @@ import Image from "next/image";
 import {
   PiEyeBold,
   PiPencilBold,
+  PiSignOutBold,
   PiTrashBold,
   PiUserBold,
 } from "react-icons/pi";
@@ -29,6 +30,7 @@ import ViewItem from "../components/view_item";
 export default function AdminUsers() {
   const router = useRouter();
 
+  const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
   const [start, setStart] = useState(0);
   const [finish, setFinish] = useState(0);
@@ -40,10 +42,10 @@ export default function AdminUsers() {
   const selectedItem = users.find((user) => user.id === selectedItemId);
 
   useEffect(() => {
-    if(localStorage.getItem("admin_uid")) {
+    if (localStorage.getItem("admin_uid")) {
       fetchData();
     } else {
-      router.replace('/admn/login')
+      router.replace("/admn/login");
     }
   }, []);
 
@@ -67,6 +69,7 @@ export default function AdminUsers() {
     if (querySnapshot.size && querySnapshot.size > 0) {
       setLastUser(lastVisible);
     }
+    setLoading(false)
   };
 
   const handleNext = async (start, finish) => {
@@ -151,7 +154,11 @@ export default function AdminUsers() {
         const docRef = doc(db, "users", selectedItemId);
         await deleteDoc(docRef);
         const userRef = collection(db, "users");
-        const userQuery = query(userRef, orderBy("firstName"), limit(pageLimit));
+        const userQuery = query(
+          userRef,
+          orderBy("firstName"),
+          limit(pageLimit)
+        );
         const querySnapshot = await getDocs(userQuery);
         console.log(querySnapshot);
         setStart(0);
@@ -231,81 +238,99 @@ export default function AdminUsers() {
         <div className="flex flex-row items-center sm:space-x-3 space-x-1">
           <p className="sm:text-2xl text-base text-white font-bold">Admin</p>
           <PiUserBold size={30} />
+          <button
+            onClick={() => {
+              localStorage.removeItem("admin_uid");
+              router.replace("/admn/login");
+            }}
+          >
+            <PiSignOutBold size={30} />
+          </button>
         </div>
       </nav>
-      <div className="flex flex-row items-center rounded bg-[#d9d9d9] p-1 mx-10 my-5 gap-2 w-min">
-        <button className="bg-[#766A6A] text-white rounded w-40 h-10">
-          Users
-        </button>
-        <button
-          className="text-black rounded w-40 h-10"
-          onClick={() => router.push("/admn/library/vocabulary")}
-        >
-          Library
-        </button>
-        <button
-          className="text-black rounded w-40 h-10"
-          onClick={() => router.push("/admn/activity/word_pronunciation")}
-        >
-          Activity
-        </button>
-      </div>
-      <div className="flex flex-1 flex-col justify-start items-start mx-10 w-[calc(100%_-_80px)]">
-        <table className="w-full border rounded bg-[#766A6A] text-white">
-          <thead>
-            <tr className="border">
-              <th className="text-start p-2">ID</th>
-              <th className="text-start p-2">First Name</th>
-              <th className="text-start p-2">Last Name</th>
-              <th className="text-start p-2">Email</th>
-              <th className="text-start p-2">Stars</th>
-              <th className="text-start p-2">Created At</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user, index) => {
-              return (
-                <tr key={index} className="border">
-                  <td className="text-start p-2">{user.id}</td>
-                  <td className="text-start p-2">{user.firstName}</td>
-                  <td className="text-start p-2">{user.lastName}</td>
-                  <td className="text-start p-2">{user.email}</td>
-                  <td className="text-start p-2">{user.stars}</td>
-                  <td className="text-start p-2">
-                    {user.createdAt.toDate().toDateString()}
-                  </td>
-                  <td className="flex flex-row items-center justify-center p-2 gap-2">
-                    <button
-                      className="outline-none border-none bg-transparent"
-                      onClick={() => openModal("view", user.id)}
-                    >
-                      <PiEyeBold size={20} />
-                    </button>
-                    {/* <button className="outline-none border-none bg-transparent">
+      {loading ? (
+        <div className="flex flex-1 justify-center items-center">
+          <p className="animate-bounce text-3xl text-white font-semibold">
+            Loading ...
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="flex flex-row items-center rounded bg-[#d9d9d9] p-1 mx-10 my-5 gap-2 w-min">
+            <button className="bg-[#766A6A] text-white rounded w-40 h-10">
+              Users
+            </button>
+            <button
+              className="text-black rounded w-40 h-10"
+              onClick={() => router.push("/admn/library/vocabulary")}
+            >
+              Library
+            </button>
+            <button
+              className="text-black rounded w-40 h-10"
+              onClick={() => router.push("/admn/activity/word_pronunciation")}
+            >
+              Activity
+            </button>
+          </div>
+          <div className="flex flex-1 flex-col justify-start items-start mx-10 w-[calc(100%_-_80px)]">
+            <table className="w-full border rounded bg-[#766A6A] text-white">
+              <thead>
+                <tr className="border">
+                  <th className="text-start p-2">ID</th>
+                  <th className="text-start p-2">First Name</th>
+                  <th className="text-start p-2">Last Name</th>
+                  <th className="text-start p-2">Email</th>
+                  <th className="text-start p-2">Stars</th>
+                  <th className="text-start p-2">Created At</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((user, index) => {
+                  return (
+                    <tr key={index} className="border">
+                      <td className="text-start p-2">{user.id}</td>
+                      <td className="text-start p-2">{user.firstName}</td>
+                      <td className="text-start p-2">{user.lastName}</td>
+                      <td className="text-start p-2">{user.email}</td>
+                      <td className="text-start p-2">{user.stars}</td>
+                      <td className="text-start p-2">
+                        {user.createdAt.toDate().toDateString()}
+                      </td>
+                      <td className="flex flex-row items-center justify-center p-2 gap-2">
+                        <button
+                          className="outline-none border-none bg-transparent"
+                          onClick={() => openModal("view", user.id)}
+                        >
+                          <PiEyeBold size={20} />
+                        </button>
+                        {/* <button className="outline-none border-none bg-transparent">
                       <PiPencilBold size={20} />
                     </button> */}
-                    <button
-                      className="outline-none border-none bg-transparent"
-                      onClick={() => openModal("delete", user.id)}
-                    >
-                      <PiTrashBold size={20} />
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        <Pagination
-          start={start}
-          finish={finish}
-          handleNext={handleNext}
-          handlePrev={handlePrev}
-          pageLimit={pageLimit}
-          word="users"
-        />
-      </div>
+                        <button
+                          className="outline-none border-none bg-transparent"
+                          onClick={() => openModal("delete", user.id)}
+                        >
+                          <PiTrashBold size={20} />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            <Pagination
+              start={start}
+              finish={finish}
+              handleNext={handleNext}
+              handlePrev={handlePrev}
+              pageLimit={pageLimit}
+              word="users"
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }

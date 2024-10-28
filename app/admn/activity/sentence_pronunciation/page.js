@@ -6,6 +6,7 @@ import Image from "next/image";
 import {
   PiEyeBold,
   PiPencilBold,
+  PiSignOutBold,
   PiTrashBold,
   PiUserBold,
 } from "react-icons/pi";
@@ -38,6 +39,7 @@ export default function AdminSentencePronunciation() {
     pronunciation: "",
     star: 1,
   });
+  const [loading, setLoading] = useState(true);
   const [inputName, setInputName] = useState("");
   const [words, setWords] = useState([]);
   const [start, setStart] = useState(0);
@@ -50,10 +52,10 @@ export default function AdminSentencePronunciation() {
   const selectedItem = words.find((word) => word.id === selectedItemId);
 
   useEffect(() => {
-    if(localStorage.getItem("admin_uid")) {
+    if (localStorage.getItem("admin_uid")) {
       fetchData();
     } else {
-      router.replace('/admn/login')
+      router.replace("/admn/login");
     }
   }, []);
 
@@ -84,6 +86,7 @@ export default function AdminSentencePronunciation() {
     if (querySnapshot.size && querySnapshot.size > 0) {
       setLastUser(lastVisible);
     }
+    setLoading(false);
   };
 
   const handleNext = async (start, finish) => {
@@ -269,7 +272,7 @@ export default function AdminSentencePronunciation() {
       }
       setModalOpen("");
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
 
@@ -457,103 +460,121 @@ export default function AdminSentencePronunciation() {
         <div className="flex flex-row items-center sm:space-x-3 space-x-1">
           <p className="sm:text-2xl text-base text-white font-bold">Admin</p>
           <PiUserBold size={30} />
+          <button
+            onClick={() => {
+              localStorage.removeItem("admin_uid");
+              router.replace("/admn/login");
+            }}
+          >
+            <PiSignOutBold size={30} />
+          </button>
         </div>
       </nav>
-      <div className="flex flex-row items-center rounded bg-[#d9d9d9] p-1 mx-10 my-5 gap-2 w-min">
-        <button
-          className="text-black rounded w-40 h-10"
-          onClick={() => router.push("/admn")}
-        >
-          Users
-        </button>
-        <button
-          className="text-black rounded w-40 h-10"
-          onClick={() => router.push("/admn/library/vocabulary")}
-        >
-          Library
-        </button>
-        <button className="bg-[#766A6A] text-white rounded w-40 h-10">
-          Activity
-        </button>
-      </div>
-      <div className="flex flex-row ml-auto items-center rounded bg-[#d9d9d9] p-1 mx-10 mb-5 gap-2 w-min">
-        <button
-          className="text-black rounded w-48 h-10"
-          onClick={() => router.push("/admn/activity/word_pronunciation")}
-        >
-          Word Pronunciation
-        </button>
-        <button className="bg-[#766A6A] text-white rounded w-48 h-10">
-          Sentence Pronunciation
-        </button>
-        <button
-          className="text-black rounded w-48 h-10"
-          onClick={() => router.push("/admn/activity/scripted_speech")}
-        >
-          Scripted Speech
-        </button>
-      </div>
-      <button
-        className="bg-[#766A6A] text-white rounded w-40 h-10 mx-10 mb-5"
-        onClick={() => setModalOpen("add")}
-      >
-        Add Sentence
-      </button>
-      <div className="flex flex-1 flex-col justify-start items-start mx-10 w-[calc(100%_-_80px)]">
-        <table className="w-full border rounded bg-[#766A6A] text-white">
-          <thead>
-            <tr className="border">
-              <th className="text-start p-2">ID</th>
-              <th className="text-start p-2">Word</th>
-              <th className="text-start p-2">Pronunciation</th>
-              <th className="text-start p-2">Level</th>
-              <th className="text-start p-2">Stars</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {words.map((word, index) => {
-              return (
-                <tr key={index} className="border">
-                  <td className="text-start p-2">{word.id}</td>
-                  <td className="text-start p-2">{word.word}</td>
-                  <td className="text-start p-2">{word.pronunciation}</td>
-                  <td className="text-start p-2">{word.level}</td>
-                  <td className="text-start p-2">{word.star}</td>
-                  <td className="flex flex-row items-center justify-center p-2 gap-2">
-                    <button
-                      className="outline-none border-none bg-transparent"
-                      onClick={() => openModal("view", word.id)}
-                    >
-                      <PiEyeBold size={20} />
-                    </button>
-                    <button
-                      className="outline-none border-none bg-transparent"
-                      onClick={() => openModal("edit", word.id)}
-                    >
-                      <PiPencilBold size={20} />
-                    </button>
-                    <button
-                      className="outline-none border-none bg-transparent"
-                      onClick={() => openModal("delete", word.id)}
-                    >
-                      <PiTrashBold size={20} />
-                    </button>
-                  </td>
+      {loading ? (
+        <div className="flex flex-1 justify-center items-center">
+          <p className="animate-bounce text-3xl text-white font-semibold">
+            Loading ...
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="flex flex-row items-center rounded bg-[#d9d9d9] p-1 mx-10 my-5 gap-2 w-min">
+            <button
+              className="text-black rounded w-40 h-10"
+              onClick={() => router.push("/admn")}
+            >
+              Users
+            </button>
+            <button
+              className="text-black rounded w-40 h-10"
+              onClick={() => router.push("/admn/library/vocabulary")}
+            >
+              Library
+            </button>
+            <button className="bg-[#766A6A] text-white rounded w-40 h-10">
+              Activity
+            </button>
+          </div>
+          <div className="flex flex-row ml-auto items-center rounded bg-[#d9d9d9] p-1 mx-10 mb-5 gap-2 w-min">
+            <button
+              className="text-black rounded w-48 h-10"
+              onClick={() => router.push("/admn/activity/word_pronunciation")}
+            >
+              Word Pronunciation
+            </button>
+            <button className="bg-[#766A6A] text-white rounded w-48 h-10">
+              Sentence Pronunciation
+            </button>
+            <button
+              className="text-black rounded w-48 h-10"
+              onClick={() => router.push("/admn/activity/scripted_speech")}
+            >
+              Scripted Speech
+            </button>
+          </div>
+          <button
+            className="bg-[#766A6A] text-white rounded w-40 h-10 mx-10 mb-5"
+            onClick={() => setModalOpen("add")}
+          >
+            Add Sentence
+          </button>
+          <div className="flex flex-1 flex-col justify-start items-start mx-10 w-[calc(100%_-_80px)]">
+            <table className="w-full border rounded bg-[#766A6A] text-white">
+              <thead>
+                <tr className="border">
+                  <th className="text-start p-2">ID</th>
+                  <th className="text-start p-2">Word</th>
+                  <th className="text-start p-2">Pronunciation</th>
+                  <th className="text-start p-2">Level</th>
+                  <th className="text-start p-2">Stars</th>
+                  <th></th>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        <Pagination
-          start={start}
-          finish={finish}
-          handleNext={handleNext}
-          handlePrev={handlePrev}
-          pageLimit={pageLimit}
-          word="sentences"
-        />
-      </div>
+              </thead>
+              <tbody>
+                {words.map((word, index) => {
+                  return (
+                    <tr key={index} className="border">
+                      <td className="text-start p-2">{word.id}</td>
+                      <td className="text-start p-2">{word.word}</td>
+                      <td className="text-start p-2">{word.pronunciation}</td>
+                      <td className="text-start p-2">{word.level}</td>
+                      <td className="text-start p-2">{word.star}</td>
+                      <td className="flex flex-row items-center justify-center p-2 gap-2">
+                        <button
+                          className="outline-none border-none bg-transparent"
+                          onClick={() => openModal("view", word.id)}
+                        >
+                          <PiEyeBold size={20} />
+                        </button>
+                        <button
+                          className="outline-none border-none bg-transparent"
+                          onClick={() => openModal("edit", word.id)}
+                        >
+                          <PiPencilBold size={20} />
+                        </button>
+                        <button
+                          className="outline-none border-none bg-transparent"
+                          onClick={() => openModal("delete", word.id)}
+                        >
+                          <PiTrashBold size={20} />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            <Pagination
+              start={start}
+              finish={finish}
+              handleNext={handleNext}
+              handlePrev={handlePrev}
+              pageLimit={pageLimit}
+              word="sentences"
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }
