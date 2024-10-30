@@ -253,7 +253,19 @@ export default function AdminConversation() {
       });
 
       console.log(result);
-      setWords(result);
+      const convo = result.map((data) => {
+        return {
+          ...data,
+          conversations: data.conversations.map((info, index) => {
+            return {
+              id: index,
+              ...info
+            }
+          })
+        }
+      })
+      console.log(convo)
+      setWords(convo);
       if (querySnapshot.size && querySnapshot.size > 0) {
         setLastUser(lastVisible);
       }
