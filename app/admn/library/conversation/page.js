@@ -6,13 +6,17 @@ import Image from "next/image";
 import {
   PiEyeBold,
   PiPencilBold,
+  PiPlusCircleBold,
   PiSignOutBold,
   PiTrashBold,
   PiUserBold,
 } from "react-icons/pi";
 import { db } from "@/app/firebase";
 import {
+  addDoc,
   collection,
+  deleteDoc,
+  doc,
   endBefore,
   getDocs,
   limit,
@@ -20,6 +24,7 @@ import {
   query,
   startAfter,
   startAt,
+  updateDoc,
 } from "firebase/firestore";
 import Pagination from "@/app/components/pagination";
 import { useRouter } from "next/navigation";
@@ -30,13 +35,21 @@ export default function AdminConversation() {
   const router = useRouter();
 
   const [addedWord, setAddedWord] = useState({
-    conversations: [],
+    conversations: [
+      {
+        id: 0,
+        role: "user",
+        character: "",
+        message: "",
+      },
+    ],
     level: 1,
     star: 1,
   });
 
   const [loading, setLoading] = useState(true);
   const [inputName, setInputName] = useState("");
+  const [inputMessage, setInputMessage] = useState("")
   const [words, setWords] = useState([]);
   const [start, setStart] = useState(0);
   const [finish, setFinish] = useState(0);
@@ -58,9 +71,19 @@ export default function AdminConversation() {
   useEffect(() => {
     const inputId = document.getElementById(inputName);
     if (inputName && inputId) {
+      setInputMessage("")
       inputId.focus();
     }
   }, [inputName, addedWord]);
+
+  useEffect(() => {
+    const id = inputMessage.replace('conversations','')
+    const inputId = document.getElementsByName(inputMessage);
+    console.log(inputId)
+    if (inputMessage && inputId.length !== 0) {
+      inputId[0].focus();
+    }
+  }, [inputMessage, addedWord]);
 
   const fetchData = async () => {
     console.log(start, finish);
@@ -78,7 +101,19 @@ export default function AdminConversation() {
     });
 
     console.log(result);
-    setWords(result);
+      const convo = result.map((data) => {
+        return {
+          ...data,
+          conversations: data.conversations.map((info, index) => {
+            return {
+              id: index,
+              ...info
+            }
+          })
+        }
+      })
+      console.log(convo)
+      setWords(convo);
     if (querySnapshot.size && querySnapshot.size > 0) {
       setLastUser(lastVisible);
     }
@@ -108,7 +143,19 @@ export default function AdminConversation() {
       });
 
       console.log(result);
-      setWords(result);
+      const convo = result.map((data) => {
+        return {
+          ...data,
+          conversations: data.conversations.map((info, index) => {
+            return {
+              id: index,
+              ...info
+            }
+          })
+        }
+      })
+      console.log(convo)
+      setWords(convo);
       if (querySnapshot.size && querySnapshot.size > 0) {
         setLastUser(lastVisible);
       }
@@ -138,7 +185,19 @@ export default function AdminConversation() {
       });
 
       console.log(result);
-      setWords(result);
+      const convo = result.map((data) => {
+        return {
+          ...data,
+          conversations: data.conversations.map((info, index) => {
+            return {
+              id: index,
+              ...info
+            }
+          })
+        }
+      })
+      console.log(convo)
+      setWords(convo);
       if (querySnapshot.size && querySnapshot.size > 0) {
         setLastUser(lastVisible);
       }
@@ -161,18 +220,147 @@ export default function AdminConversation() {
   function handleCancel() {
     setSelectedItemId(null);
     setAddedWord({
-      conversations: [],
+      conversations: [
+        {
+          id: 0,
+          role: "user",
+          character: "",
+          message: "",
+        },
+      ],
       level: 1,
       star: 1,
     });
     setModalOpen("");
   }
 
-  function handleDelete() {}
+  async function handleDelete() {
+    try {
+      const docRef = doc(db, "conversation", selectedItemId);
+      await deleteDoc(docRef);
+      const userRef = collection(db, "conversation");
+      const userQuery = query(userRef, orderBy("level"), limit(pageLimit));
+      const querySnapshot = await getDocs(userQuery);
+      console.log(querySnapshot);
+      setStart(0);
+      setFinish(querySnapshot.size);
+      const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+      const result = querySnapshot.docs.map((doc) => {
+        return {
+          id: doc.id,
+          ...doc.data(),
+        };
+      });
 
-  function handleAdd() {}
+      console.log(result);
+      setWords(result);
+      if (querySnapshot.size && querySnapshot.size > 0) {
+        setLastUser(lastVisible);
+      }
+      setModalOpen("");
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-  function handleEdit() {}
+  async function handleAdd() {
+    console.log(words.length, addedWord.level);
+    if (words.length < addedWord.level) {
+      console.log("CALLED");
+      try {
+        const docRef = await addDoc(collection(db, "conversation"), {
+          level: Number(addedWord.level),
+          conversations: addedWord.conversations.map((convo) => {
+            return {role: convo.role, character: "", message: convo.message}
+          }),
+          star: Number(addedWord.star),
+        });
+        console.log(docRef);
+
+        const userRef = collection(db, "conversation");
+        const userQuery = query(userRef, orderBy("level"), limit(pageLimit));
+        const querySnapshot = await getDocs(userQuery);
+        console.log(querySnapshot);
+        setStart(0);
+        setFinish(querySnapshot.size);
+        const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+        const result = querySnapshot.docs.map((doc) => {
+          return {
+            id: doc.id,
+            ...doc.data(),
+          };
+        });
+
+        console.log(result);
+      const convo = result.map((data) => {
+        return {
+          ...data,
+          conversations: data.conversations.map((info, index) => {
+            return {
+              id: index,
+              ...info
+            }
+          })
+        }
+      })
+      console.log(convo)
+      setWords(convo);
+        if (querySnapshot.size && querySnapshot.size > 0) {
+          setLastUser(lastVisible);
+        }
+        setModalOpen("");
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
+
+  async function handleEdit() {
+    try {
+      const docRef = doc(db, "conversation", selectedItemId);
+      await updateDoc(docRef, {
+        conversations: addedWord.conversations.map((convo) => {
+          return {role: convo.role, character: "", message: convo.message}
+        }),
+        level: Number(addedWord.level),
+        star: Number(addedWord.star),
+      });
+      const userRef = collection(db, "conversation");
+      const userQuery = query(userRef, orderBy("level"), limit(pageLimit));
+      const querySnapshot = await getDocs(userQuery);
+      console.log(querySnapshot);
+      setStart(0);
+      setFinish(querySnapshot.size);
+      const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+      const result = querySnapshot.docs.map((doc) => {
+        return {
+          id: doc.id,
+          ...doc.data(),
+        };
+      });
+
+      console.log(result);
+      const convo = result.map((data) => {
+        return {
+          ...data,
+          conversations: data.conversations.map((info, index) => {
+            return {
+              id: index,
+              ...info
+            }
+          })
+        }
+      })
+      console.log(convo)
+      setWords(convo);
+      if (querySnapshot.size && querySnapshot.size > 0) {
+        setLastUser(lastVisible);
+      }
+      setModalOpen("");
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const preferredOrder = ["id", "level", "conversations", "star"];
   const keyReplacement = {
@@ -191,9 +379,69 @@ export default function AdminConversation() {
     }));
   };
 
+  const handleMessageChange = (e) => {
+    console.log(e);
+    const convo = addedWord.conversations.map((conversation) => {
+      console.log(conversation.id, e.target.id);
+      if (conversation.id.toString() === e.target.id) {
+        return {
+          id: conversation.id,
+          role: conversation.role,
+          message: e.target.value,
+        };
+      } else {
+        return conversation;
+      }
+    });
+    setInputMessage(e.target.name)
+    setAddedWord((prevState) => ({
+      ...prevState,
+      conversations: convo,
+    }));
+  };
+
+  const handleRoleChange = (e) => {
+    console.log(e);
+
+    const convo = addedWord.conversations.map((conversation) => {
+      console.log(conversation.id, e.target.id);
+      if (conversation.id.toString() === e.target.id) {
+        return {
+          id: conversation.id,
+          role: e.target.value,
+          message: conversation.message,
+        };
+      } else {
+        return conversation;
+      }
+    });
+    console.log(convo);
+    setAddedWord((prevState) => ({
+      ...prevState,
+      conversations: convo,
+    }));
+  };
+
+  const handleAddConvo = () => {
+    setAddedWord((prevState) => ({
+      ...prevState,
+      conversations: [
+        ...prevState.conversations,
+        {
+          id: prevState.conversations.length,
+          role: "user",
+          character: "",
+          message: "",
+        },
+      ],
+    }));
+  };
+
+
+  console.log("ADDED: ", addedWord)
   const AddItem = () => {
     return (
-      <div className="rounded p-5 flex flex-col bg-white">
+      <div className="rounded p-5 flex flex-col bg-white max-h-[calc(100%_-_100px)] overflow-y-scroll">
         <p className="text-2xl font-medium text-[#766A6A] mb-5">
           Add Conversation
         </p>
@@ -219,6 +467,12 @@ export default function AdminConversation() {
           value={addedWord.star}
           onChange={handleChange}
         />
+        <GroupInputField
+          label="Conversations"
+          name="conversations"
+          value={addedWord.conversations}
+          onChange={handleMessageChange}
+        />
         <div className="flex flex-row justify-end items-center gap-2 mt-10">
           <button
             className="text-white p-2 bg-red-500"
@@ -239,7 +493,7 @@ export default function AdminConversation() {
 
   const EditItem = () => {
     return (
-      <div className="rounded p-5 flex flex-col bg-white">
+      <div className="rounded p-5 flex flex-col bg-white max-h-[calc(100%_-_100px)] overflow-y-scroll">
         <p className="text-2xl font-medium text-[#766A6A] mb-5">
           Edit Conversation
         </p>
@@ -264,6 +518,12 @@ export default function AdminConversation() {
           value={addedWord.star}
           onChange={handleChange}
         />
+        <GroupInputField
+          label="Conversations"
+          name="conversations"
+          value={addedWord.conversations}
+          onChange={handleMessageChange}
+        />
         <div className="flex flex-row justify-end items-center gap-2 mt-10">
           <button
             className="text-white p-2 bg-red-500"
@@ -277,6 +537,43 @@ export default function AdminConversation() {
           >
             Edit
           </button>
+        </div>
+      </div>
+    );
+  };
+
+  const GroupInputField = ({ label, name, value, onChange }) => {
+    return (
+      <div className="flex flex-row items-start justify-between gap-3 my-2">
+        <p className="text-[#766A6A]">{label}</p>
+
+        <div className="flex flex-col w-full gap-5">
+          {value.map((data, index) => {
+            return (
+              <div className="flex w-full flex-col gap-2 items-end" key={index}>
+                <select
+                  id={index}
+                  onChange={handleRoleChange}
+                  value={data.role}
+                  className="w-full border border-gray-800 rounded outline-none px-2 h-8 text-black"
+                >
+                  <option value="user">User</option>
+                  <option value="computer">Computer</option>
+                </select>
+                <input
+                  id={index}
+                  name={name + index}
+                  value={data.message}
+                  placeholder="Message"
+                  onChange={onChange}
+                  className="border border-gray-800 rounded outline-none px-2 h-8 text-black"
+                />
+                {index === value.length - 1 && <button onClick={handleAddConvo}>
+                  <PiPlusCircleBold size={20} color="black" />
+                </button>}
+              </div>
+            );
+          })}
         </div>
       </div>
     );
