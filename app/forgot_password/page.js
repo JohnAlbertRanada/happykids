@@ -62,7 +62,7 @@ export default function ForgotPassword() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />}
-        {!success && <button className="bg-[#766A6A] h-8 text-white" onClick={() => checkUserExists(email)}>
+        {!success && <button className="bg-green-500 h-8 text-white" onClick={() => checkUserExists(email)}>
           Forgot Password
         </button>}
         <p className="my-2 text-red-500">{errorMessage}</p>

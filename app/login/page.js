@@ -117,7 +117,7 @@ export default function Login() {
             e.preventDefault();
             login(email, password);
           }}
-          className="p-5 rounded bg-cyan-500 text-white font-medium text-lg"
+          className="p-5 rounded bg-green-500 text-white font-medium text-lg"
         >
           Login
         </button>
