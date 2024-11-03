@@ -67,7 +67,7 @@ export default function Library() {
           <button className="p-2 rounded-full bg-[#766A6A] w-fit h-fit mb-5" onClick={() => playAudio("mouth")}>
             <PiSpeakerSimpleHighFill size="20" />
           </button>
-          <button onClick={() => router.push("library/vocabulary")} className="bg-[#766A6A] text-white h-10 px-5 rounded mt-auto">
+          <button onClick={() => router.push("library/vocabulary")} className="bg-green-500 text-white h-10 px-5 rounded mt-auto">
             Start Learning
           </button>
         </div>
@@ -84,7 +84,7 @@ export default function Library() {
           <button className="p-2 rounded-full bg-[#766A6A] w-fit h-fit mb-5" onClick={() => playAudio("The bag is color red.")}>
             <PiSpeakerSimpleHighFill size="20" />
           </button>
-          <button className="bg-[#766A6A] text-white h-10 px-5 mt-auto rounded" onClick={() => router.push("library/sentence_practice")}>
+          <button className="bg-green-500 text-white h-10 px-5 mt-auto rounded" onClick={() => router.push("library/sentence_practice")}>
             Start Learning
           </button>
         </div>
@@ -114,7 +114,7 @@ export default function Library() {
               </button>
             </div>
           </div>
-          <button className="bg-[#766A6A] text-white h-10 px-5 mt-auto rounded" onClick={() => router.push('/library/conversation')}>
+          <button className="bg-green-500 text-white h-10 px-5 mt-auto rounded" onClick={() => router.push('/library/conversation')}>
             Start Learning
           </button>
         </div>

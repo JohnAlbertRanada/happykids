@@ -66,7 +66,7 @@ export default function Activity() {
           <button className="p-2 rounded-full bg-[#766A6A] w-fit h-fit mb-5" onClick={() => playAudio("between")}>
             <PiSpeakerSimpleHighFill size="20" />
           </button>
-          <button onClick={() => router.push("/activity/word_pronunciation")} className="bg-[#766A6A] text-white h-10 px-5 mt-auto rounded">
+          <button onClick={() => router.push("/activity/word_pronunciation")} className="bg-green-500 text-white h-10 px-5 mt-auto rounded">
             Start Activity
           </button>
         </div>
@@ -83,7 +83,7 @@ export default function Activity() {
           <button className="p-2 rounded-full bg-[#766A6A] w-fit h-fit mb-5" onClick={() => playAudio("Why are you learning English?")}>
             <PiSpeakerSimpleHighFill size="20" />
           </button>
-          <button onClick={() => router.push("/activity/sentence_pronunciation")} className="bg-[#766A6A] text-white h-10 px-5 mt-auto rounded">
+          <button onClick={() => router.push("/activity/sentence_pronunciation")} className="bg-green-500 text-white h-10 px-5 mt-auto rounded">
             Start Activity
           </button>
         </div>
@@ -113,7 +113,7 @@ export default function Activity() {
               </button>
             </div>
           </div>
-          <button className="bg-[#766A6A] text-white h-10 px-5 mt-auto rounded" onClick={() => router.push("/activity/scripted_speech")}>
+          <button className="bg-green-500 text-white h-10 px-5 mt-auto rounded" onClick={() => router.push("/activity/scripted_speech")}>
             Start Activity
           </button>
         </div>

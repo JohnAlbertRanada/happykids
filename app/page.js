@@ -215,7 +215,7 @@ export default function Home() {
                   <div className="text-ellipsis text-gray-500 font-bold sm:text-xl text-base italic overflow-x-hidden whitespace-nowrap">
                     Level {currentVocabulary.level} - {currentVocabulary.word}
                   </div>
-                  <button className="bg-[#766A6A] text-white text-xs h-10 px-5 mt-3 rounded" onClick={() => router.push(`/library/vocabulary/${currentVocabulary.id}`)}>
+                  <button className="bg-green-500 text-white text-xs h-10 px-5 mt-3 rounded" onClick={() => router.push(`/library/vocabulary/${currentVocabulary.id}`)}>
                     Continue Learning
                   </button>
                 </div>
@@ -229,7 +229,7 @@ export default function Home() {
                     Level {currentSentencePractice.level} -{" "}
                     {currentSentencePractice.word}
                   </div>
-                  <button className="bg-[#766A6A] text-white text-xs h-10 px-5 mt-3 rounded"  onClick={() => router.push(`/library/sentence_practice/${currentSentencePractice.id}`)}>
+                  <button className="bg-green-500 text-white text-xs h-10 px-5 mt-3 rounded"  onClick={() => router.push(`/library/sentence_practice/${currentSentencePractice.id}`)}>
                     Continue Learning
                   </button>
                 </div>
@@ -243,7 +243,7 @@ export default function Home() {
                     Level {currentConversation.level} - Conversation{" "}
                     {currentConversation.level}
                   </div>
-                  <button className="bg-[#766A6A] text-white text-xs h-10 px-5 mt-3 rounded"  onClick={() => router.push(`/library/conversation/${currentConversation.id}`)}>
+                  <button className="bg-green-500 text-white text-xs h-10 px-5 mt-3 rounded"  onClick={() => router.push(`/library/conversation/${currentConversation.id}`)}>
                     Continue Learning
                   </button>
                 </div>
@@ -259,7 +259,7 @@ export default function Home() {
                     Level {currentWordPronunciation.level} -{" "}
                     {currentWordPronunciation.word}
                   </div>
-                  <button className="bg-[#766A6A] text-white text-xs h-10 px-5 mt-3 rounded"  onClick={() => router.push(`/activity/word_pronunciation/${currentWordPronunciation.id}`)}>
+                  <button className="bg-green-500 text-white text-xs h-10 px-5 mt-3 rounded"  onClick={() => router.push(`/activity/word_pronunciation/${currentWordPronunciation.id}`)}>
                     Continue Activity
                   </button>
                 </div>
@@ -273,7 +273,7 @@ export default function Home() {
                     Level {currentSentencePronunciation.level} -{" "}
                     {currentSentencePronunciation.word}
                   </div>
-                  <button className="bg-[#766A6A] text-white text-xs h-10 px-5 mt-3 rounded"  onClick={() => router.push(`/activity/sentence_pronunciation/${currentSentencePronunciation.id}`)}>
+                  <button className="bg-green-500 text-white text-xs h-10 px-5 mt-3 rounded"  onClick={() => router.push(`/activity/sentence_pronunciation/${currentSentencePronunciation.id}`)}>
                     Continue Activity
                   </button>
                 </div>
@@ -287,7 +287,7 @@ export default function Home() {
                     Level {currentScriptedSpeech.level} - Speech{" "}
                     {currentScriptedSpeech.level}
                   </div>
-                  <button className="bg-[#766A6A] text-white text-xs h-10 px-5 mt-3 rounded"  onClick={() => router.push(`/activity/scripted_speech/${currentScriptedSpeech.id}`)}>
+                  <button className="bg-green-500 text-white text-xs h-10 px-5 mt-3 rounded"  onClick={() => router.push(`/activity/scripted_speech/${currentScriptedSpeech.id}`)}>
                     Continue Activity
                   </button>
                 </div>
