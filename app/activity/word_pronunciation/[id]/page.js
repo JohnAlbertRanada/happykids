@@ -234,13 +234,13 @@ export default function WordPronunciationItem() {
             </div>
             <div className="flex flex-row w-full mt-5">
               <div className="flex flex-col flex-1 justify-center items-center pl-10">
-                <p className="text-black md:text-5xl text-3xl font-bold  text-center mb-2">
+                <p className="text-black text-5xl font-bold  text-center mb-2">
                   {word?.word}
                 </p>
                 <p className="text-black text-2xl font-medium text-center">
                   {word?.pronunciation}
                 </p>
-                <div className="flex flex-row mt-5 text-2xl text-black items-center">
+                <div className="flex flex-row mt-5 text-4xl text-black items-center">
                   {word?.star} <PiStarFill color="yellow" className="ml-2" />
                 </div>
               </div>

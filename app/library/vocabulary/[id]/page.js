@@ -138,19 +138,19 @@ export default function VocabularyItem() {
             </div>
             <div className="flex flex-row w-full mt-5">
               <div className="flex flex-col flex-1 justify-center items-center">
-                <p className="text-black md:text-5xl text-3xl font-bold text-center mb-2">
+                <p className="text-black md:text-5xl text-4xl font-bold text-center mb-2">
                   {word?.word}
                 </p>
                 <p className="text-black text-xl font-medium text-center">
                   Pronunciation: <b>{word?.pronunciation}</b>
                 </p>
-                <p className="text-black text-xl font-medium text-center">
+                <p className="text-black text-2xl font-medium text-center">
                   In Tagalog: <b>{word?.tagalog}</b>
                 </p>
-                <p className="text-black text-base font-medium text-center italic mt-2">
+                <p className="text-black text-2xl font-medium text-center italic mt-2">
                   {word?.description}
                 </p>
-                <div className="flex flex-row mt-5 text-2xl text-black items-center">
+                <div className="flex flex-row mt-5 text-5xl text-black items-center">
                   {word?.star} <PiStarFill color="yellow" className="ml-2" />
                 </div>
               </div>

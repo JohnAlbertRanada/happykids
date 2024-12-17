@@ -160,7 +160,7 @@ export default function ConversationItem() {
                     <div className="border border-gray-500 rounded p-2">
                       <p
                         id={index.toString()}
-                        className={`text-black sm:text-xl text-lg relative w-[max-content]`}
+                        className={`text-black sm:text-3xl text-lg relative w-[max-content]`}
                       >
                         {conversation.message}
                       </p>
@@ -173,7 +173,7 @@ export default function ConversationItem() {
                     <div className="border border-gray-500 rounded p-2">
                       <p
                         id={index.toString()}
-                        className={`text-black sm:text-xl text-lg relative w-[max-content]`}
+                        className={`text-black sm:text-3xl text-lg relative w-[max-content]`}
                       >
                         {conversation.message}
                       </p>

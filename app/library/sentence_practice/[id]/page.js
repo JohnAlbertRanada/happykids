@@ -222,10 +222,10 @@ export default function SentencePracticeItem() {
                 <p className="text-black text-xl font-medium text-center">
                   Pronunciation: <b>{word?.pronunciation}</b>
                 </p>
-                <p className="text-black text-xl font-medium text-center">
+                <p className="text-black text-3xl font-medium text-center">
                   In Tagalog: <b>{word?.tagalog}</b>
                 </p>
-                <div className="flex flex-row mt-5 text-2xl text-black items-center">
+                <div className="flex flex-row mt-5 text-4xl text-black items-center">
                   {word?.star} <PiStarFill color="yellow" className="ml-2" />
                 </div>
               </div>
