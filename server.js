@@ -28,7 +28,7 @@ app.prepare().then(() => {
   };
   const server = express();
 
-  // server.use(express.json());
+  server.use(express.json());
   server.use(cors(corsOptions))
 
   server.delete('/user/:id', async (req, res) => {

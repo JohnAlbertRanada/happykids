@@ -139,7 +139,7 @@ export default function SentencePronunciationItem() {
       const results = await response.json();
       console.log(results, typeof results);
       setWaiting(false);
-      setResult(JSON.parse(results));
+      setResult(results);
     } catch (error) {
       console.error("Error:", error);
     }

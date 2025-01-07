@@ -128,7 +128,7 @@ export default function WordPronunciationItem() {
 
     try {
       const response = await fetch(
-        "https://happykids-jobs-projects-945cf969.vercel.app/rate/word_pronunciation",
+        "https://happykids-jobs-projects-945cf969.vercel.app/api/rate/word_pronunciation",
         {
           method: "POST",
           body: formData,
@@ -265,13 +265,13 @@ export default function WordPronunciationItem() {
               </div>
             </div>
             {waiting ? (
-              <div class="flex flex-col w-full justify-center items-center flex-grow space-x-5">
+              <div className="flex flex-col w-full justify-center items-center flex-grow space-x-5">
                 <p className="text-black">Waiting on the result</p>
-                <div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
               </div>
             ) : result ? (
-              <div class="flex flex-row w-full justify-center items-center flex-grow space-x-5">
-                <div class="relative size-32">
+              <div className="flex flex-row w-full justify-center items-center flex-grow space-x-5">
+                <div className="relative size-32">
                   <svg
                     class="size-full -rotate-90"
                     viewBox="0 0 36 36"
@@ -305,7 +305,7 @@ export default function WordPronunciationItem() {
                     ></circle>
                   </svg>
 
-                  <div class="absolute top-1/2 start-1/2 transform -translate-y-1/2 -translate-x-1/2">
+                  <div className="absolute top-1/2 start-1/2 transform -translate-y-1/2 -translate-x-1/2">
                     <span class="text-center text-2xl font-bold text-[#766A6A] dark:text-[#766A6A]">
                       {result.penalty > result.average_score ||
                       result.transcription === null

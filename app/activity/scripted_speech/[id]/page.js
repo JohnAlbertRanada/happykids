@@ -248,7 +248,7 @@ export default function ScriptedSpeechItem() {
 
       const result = await response.json();
       console.log(result, typeof result);
-      let data = JSON.parse(result);
+      let data = result;
       setResults((prev) => [...prev, { ...data, id: currentScriptId }]);
       console.log(results);
       // setWaiting(false);
