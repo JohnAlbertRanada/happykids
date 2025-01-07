@@ -22,7 +22,7 @@ if (!admin.apps.length) {
 
 app.prepare().then(() => {
   const corsOptions = {
-    origin: '*',
+    origin: 'https://happykids-jobs-projects-945cf969.vercel.app',
     methods: ['GET', 'POST', 'OPTIONS', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   };
