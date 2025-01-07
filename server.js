@@ -21,6 +21,11 @@ if (!admin.apps.length) {
 }
 
 app.prepare().then(() => {
+  const corsOptions = {
+    origin: '*',
+    methods: ['GET', 'POST', 'OPTIONS', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  };
   const server = express();
 
   server.use(express.json());
