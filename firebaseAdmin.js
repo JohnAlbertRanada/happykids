@@ -1,12 +1,8 @@
 import admin from 'firebase-admin';
-import fs from 'fs';
-import path from 'path';
 
 // Check if the admin SDK is already initialized
 if (!admin.apps.length) {
-  const serviceAccount = JSON.parse(
-    fs.readFileSync(path.resolve('./serviceAccountKey.json'), 'utf-8')
-  );
+  const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
