@@ -129,7 +129,7 @@ export default function SentencePronunciationItem() {
 
     try {
       const response = await fetch(
-        "http://localhost:3000/rate/word_pronunciation",
+        "https://happykids-peczy5lyh-jobs-projects-945cf969.vercel.app/rate/word_pronunciation",
         {
           method: "POST",
           body: formData,

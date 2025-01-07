@@ -145,7 +145,7 @@ export default function AdminUsers() {
   async function handleDelete() {
     try {
       const response = await fetch(
-        `http://localhost:3000/user/${selectedItemId}`,
+        `https://happykids-peczy5lyh-jobs-projects-945cf969.vercel.app/user/${selectedItemId}`,
         {
           method: "DELETE",
         }
