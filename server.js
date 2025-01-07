@@ -42,11 +42,6 @@ app.prepare().then(() => {
     return res.json({message: "success"})
   })
 
-  // Example custom route
-  server.get('/', (req, res) => {
-    return app.render(req, res, '/', req.query);
-  });
-
   server.post('/rate/word_pronunciation', upload.single('audio'), (req, res) => {
     const referenceText = req.body.referenceText;
     const audioBuffer = req.file.buffer;
@@ -68,6 +63,11 @@ app.prepare().then(() => {
       res.status(500).send("Error processing audio")
     })
   })
+
+    // Example custom route
+    server.get('/', (req, res) => {
+      return app.render(req, res, '/', req.query);
+    });
 
   // Handling all other routes
   server.get('*', (req, res) => {
