@@ -24,6 +24,7 @@ app.prepare().then(() => {
   const server = express();
 
   server.use(express.json());
+  server.use(cors())
 
   server.delete('/user/:id', async (req, res) => {
     const {id} = req.params;
