@@ -129,7 +129,7 @@ export default function SentencePronunciationItem() {
 
     try {
       const response = await fetch(
-        "https://happykids-five.vercel.app/rate/word_pronunciation",
+        "https://happykids-jobs-projects-945cf969.vercel.app/rate/word_pronunciation",
         {
           method: "POST",
           body: formData,
