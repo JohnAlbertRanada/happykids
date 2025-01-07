@@ -7,20 +7,20 @@ const upload = multer();
 export const POST = async (req) => {
   // Multer for handling file upload in serverless
   const formData = await new Promise((resolve, reject) => {
-    upload.single("audio")(req, {}, async (err) => {
+    upload.single("audio")(req, {}, (err) => {
       if (err) reject(err);
-      else resolve(await req.formData());
+      else resolve(req);
     });
   });
 
-  console.log(formData.get("audio").buffer)
-  const { referenceText } = formData.get("referenceText");
-  const audioBuffer = await formData.get("audio").arrayBuffer();
+  console.log(formData)
+  const { referenceText } = formData.body;
+  const audioBuffer = formData.file.buffer;
 
   // Execute Python script for pronunciation analysis
   const pythonProcess = spawn("python", ["analyzer.py", referenceText]);
 
-  pythonProcess.stdin.write(Buffer.from(audioBuffer));
+  pythonProcess.stdin.write(audioBuffer);
   pythonProcess.stdin.end();
 
   return new Promise((resolve, reject) => {
