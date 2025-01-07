@@ -15,12 +15,12 @@ export const POST = async (req) => {
 
   console.log(formData)
   const { referenceText } = formData.get("referenceText");
-  const audioBuffer = formData.get("audio").buffer;
+  const audioBuffer = await formData.get("audio").arrayBuffer();
 
   // Execute Python script for pronunciation analysis
   const pythonProcess = spawn("python", ["analyzer.py", referenceText]);
 
-  pythonProcess.stdin.write(audioBuffer);
+  pythonProcess.stdin.write(Buffer.from(audioBuffer));
   pythonProcess.stdin.end();
 
   return new Promise((resolve, reject) => {
