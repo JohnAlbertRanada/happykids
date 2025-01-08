@@ -7,7 +7,8 @@ const cors = require("cors")
 const admin = require("firebase-admin")
 require('dotenv').config()
 const serviceAccount = JSON.parse(process.env.NEXT_GOOGLE_APPLICATION_CREDENTIALS_JSON);
-
+console.log(process.env.NEXT_GOOGLE_APPLICATION_CREDENTIALS_JSON)
+console.log(JSON.parse(process.env.NEXT_GOOGLE_APPLICATION_CREDENTIALS_JSON))
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
