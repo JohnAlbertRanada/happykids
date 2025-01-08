@@ -24,7 +24,7 @@ if (!admin.apps.length) {
 
 app.prepare().then(() => {
   const corsOptions = {
-    origin: 'https://happykids-jobs-projects-945cf969.vercel.app',
+    origin: 'https://happykids-production.up.railway.app',
     methods: ['GET', 'POST', 'OPTIONS', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   };
