@@ -8,8 +8,6 @@
 
 /serviceAccountKey.json
 
-/env.local
-
 # testing
 /coverage
 
