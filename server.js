@@ -5,7 +5,8 @@ const {spawn} = require("child_process");
 const path = require("path");
 const cors = require("cors")
 const admin = require("firebase-admin")
-const serviceAccount = JSON.parse(require('dotenv').config({ path: `.env.${process.env.NEXT_GOOGLE_APPLICATION_CREDENTIALS_JSON}` }));
+require('dotenv').config()
+const serviceAccount = JSON.parse(process.env.NEXT_GOOGLE_APPLICATION_CREDENTIALS_JSON);
 
 
 const dev = process.env.NODE_ENV !== 'production';
