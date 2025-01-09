@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "apt-get update && apt-get install -y ffmpeg && next build",
+    "build": "next build",
     "start": "node server.js",
     "lint": "next lint",
     "dev_start": "nodemon server.js"
