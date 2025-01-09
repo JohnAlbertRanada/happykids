@@ -193,13 +193,13 @@ def calculate_fluency_score(y, sr, speech_rate, long_pauses):
 def main(reference_text):
     # Read audio data from stdin
     audio_data = sys.stdin.buffer.read()
-    print(audio_data)
 
     audio = None
 
     # Convert audio buffer to AudioSegment
     try:
         audio = AudioSegment.from_file(io.BytesIO(audio_data))
+        print(audio)
     except Exception as e:
         print(f"Error loading audio: {e}")
 
