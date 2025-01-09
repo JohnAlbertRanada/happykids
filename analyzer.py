@@ -195,7 +195,10 @@ def main(reference_text):
     audio_data = sys.stdin.buffer.read()
 
     # Convert audio buffer to AudioSegment
-    audio = AudioSegment.from_file(io.BytesIO(audio_data))
+    try:
+        audio = AudioSegment.from_file(io.BytesIO(audio_data))
+    except Exception as e:
+        print(f"Error loading audio: {e}")
     audio = audio.set_frame_rate(16000)
     audio = audio.set_channels(1)
     audio = effects.normalize(audio)  # Normalize audio to reduce noise
