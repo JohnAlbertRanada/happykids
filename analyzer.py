@@ -8,6 +8,7 @@ import json
 from pydub import AudioSegment
 from pydub import effects
 import pronouncing
+import subprocess
 
 # Define phoneme mapping (customize this mapping based on your needs)
 PHONEME_MAP = {
@@ -59,6 +60,15 @@ PHONEME_MAP = {
     'ph': 'F',       # as in "phone"
 }
 
+
+# Try running the 'ffmpeg -version' command
+result = subprocess.run(['ffmpeg', '-version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+# Check if FFmpeg is installed by looking at the return code
+if result.returncode == 0:
+    print("FFmpeg is installed.")
+else:
+    print("FFmpeg is not installed.")
 
 def phonemes_from_text(text):
     phoneme = pronouncing.phones_for_word(text)
