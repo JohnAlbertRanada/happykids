@@ -1,9 +1,10 @@
 # Use an official Python image as a base
 FROM python:3.11-slim
 
-# Install FFmpeg
+# Install dependencies and FFmpeg
 RUN apt-get update && \
-    apt-get install -y ffmpeg
+    apt-get install -y ffmpeg && \
+    rm -rf /var/lib/apt/lists/*  # Clean up apt cache
 
 # Install Python dependencies
 COPY requirements.txt .
