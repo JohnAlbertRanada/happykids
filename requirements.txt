@@ -5,3 +5,4 @@ speechrecognition
 pydub
 pronouncing
 Flask
+ffmpeg
