@@ -129,7 +129,7 @@ export default function WordPronunciationItem() {
     try {
       const response = await fetch(
         // "https://happykids-production.up.railway.app/rate/word_pronunciation",
-        "http://localhost:3000/rate/pronunciation",
+        "http://localhost:3000/rate/word_pronunciation",
         {
           method: "POST",
           body: formData,
