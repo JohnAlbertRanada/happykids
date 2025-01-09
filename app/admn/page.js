@@ -145,7 +145,8 @@ export default function AdminUsers() {
   async function handleDelete() {
     try {
       const response = await fetch(
-        `https://happykids-production.up.railway.app/user/${selectedItemId}`,
+        // `https://happykids-production.up.railway.app/user/${selectedItemId}`,
+        `http://localhost:3000/user/${selectedItemId}`,
         {
           method: "DELETE",
         }

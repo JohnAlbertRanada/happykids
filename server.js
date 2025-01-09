@@ -5,6 +5,7 @@ const {spawn} = require("child_process");
 const path = require("path");
 const cors = require("cors")
 const admin = require("firebase-admin")
+const serviceAcc = require("./serviceAccountKey.json")
 require('dotenv').config()
 console.log(process.env.NEXT_GOOGLE_APPLICATION_CREDENTIALS_JSON)
 console.log(JSON.parse(process.env.NEXT_GOOGLE_APPLICATION_CREDENTIALS_JSON))
@@ -18,13 +19,13 @@ const upload = multer();
 
 if (!admin.apps.length) {
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount), // Or provide path to your service account key file
+    credential: admin.credential.cert(serviceAcc), // Or provide path to your service account key file
   });
 }
 
 app.prepare().then(() => {
   const corsOptions = {
-    origin: 'https://happykids-production.up.railway.app',
+    // origin: 'https://happykids-production.up.railway.app',
     methods: ['GET', 'POST', 'OPTIONS', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   };
