@@ -8,7 +8,7 @@ import json
 from pydub import AudioSegment
 from pydub import effects
 import pronouncing
-import subprocess
+import os
 
 # Define phoneme mapping (customize this mapping based on your needs)
 PHONEME_MAP = {
@@ -59,6 +59,10 @@ PHONEME_MAP = {
     'wh': 'W',       # as in "what"
     'ph': 'F',       # as in "phone"
 }
+
+# Ensure ffmpeg and ffprobe are correctly set
+os.environ["FFMPEG_BINARY"] = "/usr/local/bin/ffmpeg"
+os.environ["FFPROBE_BINARY"] = "/usr/local/bin/ffprobe"
 
 def phonemes_from_text(text):
     phoneme = pronouncing.phones_for_word(text)
