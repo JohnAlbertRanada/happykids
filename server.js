@@ -45,6 +45,7 @@ app.prepare().then(() => {
   })
 
   server.post('/rate/word_pronunciation', upload.single('audio'), (req, res) => {
+    console.log("THIS IS CALLED")
     const referenceText = req.body.referenceText;
     const audioBuffer = req.file.buffer;
   
