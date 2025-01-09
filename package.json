@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "curl -sSL https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-i686-static.tar.xz -o ffmpeg.tar.xz && tar -xf ffmpeg.tar.xz && mv ffmpeg*/ffmpeg /usr/local/bin/ && rm -rf ffmpeg* && next build",
     "start": "node server.js",
     "lint": "next lint",
     "dev_start": "nodemon server.js"
