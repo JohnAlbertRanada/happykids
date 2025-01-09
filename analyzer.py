@@ -214,14 +214,14 @@ def main(reference_text):
         audio.export(audio_io, format='wav')
         audio_io.seek(0)  # Set the pointer to the start of the audio data
 
-    # Load the audio file from BytesIO using soundfile
-    y, sr = sf.read(audio_io)
+        # Load the audio file from BytesIO using soundfile
+        y, sr = sf.read(audio_io)
 
-    # Ensure the audio_io is seekable
-    audio_io.seek(0)
+        # Ensure the audio_io is seekable
+        audio_io.seek(0)
 
-    # Speech recognition for transcription
-    recognizer = speech_recog.Recognizer()
+        # Speech recognition for transcription
+        recognizer = speech_recog.Recognizer()
     
     try:
         with speech_recog.AudioFile(audio_io) as source:
