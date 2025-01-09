@@ -8,7 +8,6 @@ import json
 from pydub import AudioSegment
 from pydub import effects
 import pronouncing
-import os
 
 # Define phoneme mapping (customize this mapping based on your needs)
 PHONEME_MAP = {
@@ -60,9 +59,6 @@ PHONEME_MAP = {
     'ph': 'F',       # as in "phone"
 }
 
-# Ensure ffmpeg and ffprobe are correctly set
-os.environ["FFMPEG_BINARY"] = "/usr/local/bin/ffmpeg"
-os.environ["FFPROBE_BINARY"] = "/usr/local/bin/ffprobe"
 
 def phonemes_from_text(text):
     phoneme = pronouncing.phones_for_word(text)
@@ -198,34 +194,27 @@ def main(reference_text):
     # Read audio data from stdin
     audio_data = sys.stdin.buffer.read()
 
-    audio = None
-
     # Convert audio buffer to AudioSegment
-    try:
-        audio = AudioSegment.from_file(io.BytesIO(audio_data))
-        print(audio)
-    except Exception as e:
-        print(f"Error loading audio: {e}")
+    audio = AudioSegment.from_file(io.BytesIO(audio_data))
+    audio = audio.set_frame_rate(16000)
+    audio = audio.set_channels(1)
+    audio = effects.normalize(audio)  # Normalize audio to reduce noise
+    audio = audio.low_pass_filter(3000)  # Apply low pass filter to remove high-frequency noise
+    audio = audio.set_sample_width(2)
 
-        audio = audio.set_frame_rate(16000)
-        audio = audio.set_channels(1)
-        audio = effects.normalize(audio)  # Normalize audio to reduce noise
-        audio = audio.low_pass_filter(3000)  # Apply low pass filter to remove high-frequency noise
-        audio = audio.set_sample_width(2)
+    # Export the audio to a BytesIO object for in-memory processing
+    audio_io = io.BytesIO()
+    audio.export(audio_io, format='wav')
+    audio_io.seek(0)  # Set the pointer to the start of the audio data
 
-        # Export the audio to a BytesIO object for in-memory processing
-        audio_io = io.BytesIO()
-        audio.export(audio_io, format='wav')
-        audio_io.seek(0)  # Set the pointer to the start of the audio data
+    # Load the audio file from BytesIO using soundfile
+    y, sr = sf.read(audio_io)
 
-        # Load the audio file from BytesIO using soundfile
-        y, sr = sf.read(audio_io)
+    # Ensure the audio_io is seekable
+    audio_io.seek(0)
 
-        # Ensure the audio_io is seekable
-        audio_io.seek(0)
-
-        # Speech recognition for transcription
-        recognizer = speech_recog.Recognizer()
+    # Speech recognition for transcription
+    recognizer = speech_recog.Recognizer()
     
     try:
         with speech_recog.AudioFile(audio_io) as source:
